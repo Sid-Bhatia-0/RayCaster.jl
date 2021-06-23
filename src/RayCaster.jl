@@ -26,26 +26,26 @@ function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, x_start::T1, y_star
         delta_euclidean_y = (j_start - y_start) * delta_euclidean_per_unit_y
     end
 
-    i = i_start
-    j = j_start
+    i_stop = i_start
+    j_stop = j_start
 
-    while !obstacle_tile_map[i, j]
+    while !obstacle_tile_map[i_stop, j_stop]
 
         if (delta_euclidean_x <= delta_euclidean_y)
             total_euclidean = delta_euclidean_x
             delta_euclidean_x += delta_euclidean_per_unit_x
-            i += delta_i
+            i_stop += delta_i
             hit_dimension = 1
         else
             total_euclidean = delta_euclidean_y
             delta_euclidean_y += delta_euclidean_per_unit_y
-            j += delta_j
+            j_stop += delta_j
             hit_dimension = 2
         end
 
     end
 
-    return i, j, hit_dimension, total_euclidean
+    return i_stop, j_stop, hit_dimension, total_euclidean
 end
 
 end
