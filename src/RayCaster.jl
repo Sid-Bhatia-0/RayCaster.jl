@@ -1,6 +1,6 @@
 module RayCaster
 
-function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, x_start::T1, y_start::T1, cos_theta::T2, sin_theta::T2) where {T1, T2}
+function cast_ray_continous_world(obstacle_tile_map::AbstractArray{Bool, 2}, x_start::T1, y_start::T1, cos_theta::T2, sin_theta::T2) where {T1, T2}
     i_start = floor(Int, x_start) + 1
     j_start = floor(Int, y_start) + 1
 
@@ -48,7 +48,7 @@ function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, x_start::T1, y_star
     return i_stop, j_stop, hit_dimension, total_euclidean
 end
 
-function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, i_start_world_units, j_start_world_units, delta_i_world_units, delta_j_world_units, world_units_per_tile_unit)
+function cast_ray_discrete_world(obstacle_tile_map::AbstractArray{Bool, 2}, i_start_world_units, j_start_world_units, delta_i_world_units, delta_j_world_units, world_units_per_tile_unit)
     I = typeof(i_start_world_units)
 
     i_start_tile_units = i_start_world_units ÷ world_units_per_tile_unit + one(I)
