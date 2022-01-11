@@ -1,6 +1,6 @@
 module RayCaster
 
-function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, x_start::T1, y_start::T1, cos_theta::T2, sin_theta::T2) where {T1, T2}
+function cast_ray_continous_world(obstacle_tile_map::AbstractArray{Bool, 2}, x_start::T1, y_start::T1, cos_theta::T2, sin_theta::T2) where {T1, T2}
     i_start = floor(Int, x_start) + 1
     j_start = floor(Int, y_start) + 1
 
