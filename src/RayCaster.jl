@@ -4,7 +4,6 @@ function cast_ray_continous_world(obstacle_tile_map::AbstractArray{Bool, 2}, x_s
     i_start = floor(Int, x_start) + 1
     j_start = floor(Int, y_start) + 1
 
-    total_euclidean = zero(T1)
     delta_euclidean_per_unit_x = abs(1 / cos_theta)
     delta_euclidean_per_unit_y = abs(1 / sin_theta)
 
@@ -36,12 +35,10 @@ function cast_ray_continous_world(obstacle_tile_map::AbstractArray{Bool, 2}, x_s
     while !obstacle_tile_map[i_stop, j_stop]
 
         if (delta_euclidean_x <= delta_euclidean_y)
-            total_euclidean = delta_euclidean_x
             delta_euclidean_x += delta_euclidean_per_unit_x
             i_stop += delta_i
             hit_dimension = 1
         else
-            total_euclidean = delta_euclidean_y
             delta_euclidean_y += delta_euclidean_per_unit_y
             j_stop += delta_j
             hit_dimension = 2
@@ -49,7 +46,7 @@ function cast_ray_continous_world(obstacle_tile_map::AbstractArray{Bool, 2}, x_s
 
     end
 
-    return i_stop, j_stop, hit_dimension, total_euclidean, delta_x_world_units_to_exit_start_tile, delta_y_world_units_to_exit_start_tile
+    return i_stop, j_stop, hit_dimension, delta_x_world_units_to_exit_start_tile, delta_y_world_units_to_exit_start_tile
 end
 
 function cast_ray_discrete_world(obstacle_tile_map::AbstractArray{Bool, 2}, i_start_world_units, j_start_world_units, delta_i_world_units, delta_j_world_units, world_units_per_tile_unit)

@@ -24,11 +24,11 @@ Test.@testset "RayCaster.jl" begin
             theta = convert(T2, 0)
             cos_theta = cos(theta)
             sin_theta = sin(theta)
-            i_stop, j_stop, hit_dimension, total_euclidean, delta_x_world_units_to_exit_start_tile, delta_y_world_units_to_exit_start_tile = RC.cast_ray_continous_world(obstacle_tile_map, x_start, y_start, cos_theta, sin_theta)
+            i_stop, j_stop, hit_dimension, delta_x_world_units_to_exit_start_tile, delta_y_world_units_to_exit_start_tile = RC.cast_ray_continous_world(obstacle_tile_map, x_start, y_start, cos_theta, sin_theta)
             Test.@test i_stop == 5
             Test.@test j_stop == 3
             Test.@test hit_dimension == 1
-            Test.@test total_euclidean ≈ 1.5
+            # Test.@test total_euclidean ≈ 1.5
             Test.@test delta_x_world_units_to_exit_start_tile ≈ 0.5
             Test.@test delta_y_world_units_to_exit_start_tile ≈ 0.5
         end
@@ -37,11 +37,11 @@ Test.@testset "RayCaster.jl" begin
             theta = convert(T2, atan(2 / 3))
             cos_theta = cos(theta)
             sin_theta = sin(theta)
-            i_stop, j_stop, hit_dimension, total_euclidean, delta_x_world_units_to_exit_start_tile, delta_y_world_units_to_exit_start_tile = RC.cast_ray_continous_world(obstacle_tile_map, x_start, y_start, cos_theta, sin_theta)
+            i_stop, j_stop, hit_dimension, delta_x_world_units_to_exit_start_tile, delta_y_world_units_to_exit_start_tile = RC.cast_ray_continous_world(obstacle_tile_map, x_start, y_start, cos_theta, sin_theta)
             Test.@test i_stop == 5
             Test.@test j_stop == 4
             Test.@test hit_dimension == 1
-            Test.@test total_euclidean ≈ sqrt(1.5 ^ 2 + 1 ^ 2)
+            # Test.@test total_euclidean ≈ sqrt(1.5 ^ 2 + 1 ^ 2)
             Test.@test delta_x_world_units_to_exit_start_tile ≈ 0.5
             Test.@test delta_y_world_units_to_exit_start_tile ≈ 0.5
         end
@@ -50,11 +50,11 @@ Test.@testset "RayCaster.jl" begin
             theta = convert(T2, (pi / 2) - atan(2 / 3))
             cos_theta = cos(theta)
             sin_theta = sin(theta)
-            i_stop, j_stop, hit_dimension, total_euclidean, delta_x_world_units_to_exit_start_tile, delta_y_world_units_to_exit_start_tile = RC.cast_ray_continous_world(obstacle_tile_map, x_start, y_start, cos_theta, sin_theta)
+            i_stop, j_stop, hit_dimension, delta_x_world_units_to_exit_start_tile, delta_y_world_units_to_exit_start_tile = RC.cast_ray_continous_world(obstacle_tile_map, x_start, y_start, cos_theta, sin_theta)
             Test.@test i_stop == 4
             Test.@test j_stop == 5
             Test.@test hit_dimension == 2
-            Test.@test total_euclidean ≈ sqrt(1.5 ^ 2 + 1 ^ 2)
+            # Test.@test total_euclidean ≈ sqrt(1.5 ^ 2 + 1 ^ 2)
             Test.@test delta_x_world_units_to_exit_start_tile ≈ 0.5
             Test.@test delta_y_world_units_to_exit_start_tile ≈ 0.5
         end
@@ -63,11 +63,11 @@ Test.@testset "RayCaster.jl" begin
             theta = convert(T2, pi / 2)
             cos_theta = cos(theta)
             sin_theta = sin(theta)
-            i_stop, j_stop, hit_dimension, total_euclidean, delta_x_world_units_to_exit_start_tile, delta_y_world_units_to_exit_start_tile = RC.cast_ray_continous_world(obstacle_tile_map, x_start, y_start, cos_theta, sin_theta)
+            i_stop, j_stop, hit_dimension, delta_x_world_units_to_exit_start_tile, delta_y_world_units_to_exit_start_tile = RC.cast_ray_continous_world(obstacle_tile_map, x_start, y_start, cos_theta, sin_theta)
             Test.@test i_stop == 3
             Test.@test j_stop == 5
             Test.@test hit_dimension == 2
-            Test.@test total_euclidean ≈ 1.5
+            # Test.@test total_euclidean ≈ 1.5
             Test.@test delta_x_world_units_to_exit_start_tile ≈ 0.5
             Test.@test delta_y_world_units_to_exit_start_tile ≈ 0.5
         end
@@ -76,11 +76,11 @@ Test.@testset "RayCaster.jl" begin
             theta = convert(T2, (pi / 2) + atan(2 / 3))
             cos_theta = cos(theta)
             sin_theta = sin(theta)
-            i_stop, j_stop, hit_dimension, total_euclidean, delta_x_world_units_to_exit_start_tile, delta_y_world_units_to_exit_start_tile = RC.cast_ray_continous_world(obstacle_tile_map, x_start, y_start, cos_theta, sin_theta)
+            i_stop, j_stop, hit_dimension, delta_x_world_units_to_exit_start_tile, delta_y_world_units_to_exit_start_tile = RC.cast_ray_continous_world(obstacle_tile_map, x_start, y_start, cos_theta, sin_theta)
             Test.@test i_stop == 2
             Test.@test j_stop == 5
             Test.@test hit_dimension == 2
-            Test.@test total_euclidean ≈ sqrt(1.5 ^ 2 + 1 ^ 2)
+            # Test.@test total_euclidean ≈ sqrt(1.5 ^ 2 + 1 ^ 2)
             Test.@test delta_x_world_units_to_exit_start_tile ≈ 0.5
             Test.@test delta_y_world_units_to_exit_start_tile ≈ 0.5
         end
@@ -89,11 +89,11 @@ Test.@testset "RayCaster.jl" begin
             theta = convert(T2, pi - atan(2 / 3))
             cos_theta = cos(theta)
             sin_theta = sin(theta)
-            i_stop, j_stop, hit_dimension, total_euclidean, delta_x_world_units_to_exit_start_tile, delta_y_world_units_to_exit_start_tile = RC.cast_ray_continous_world(obstacle_tile_map, x_start, y_start, cos_theta, sin_theta)
+            i_stop, j_stop, hit_dimension, delta_x_world_units_to_exit_start_tile, delta_y_world_units_to_exit_start_tile = RC.cast_ray_continous_world(obstacle_tile_map, x_start, y_start, cos_theta, sin_theta)
             Test.@test i_stop == 1
             Test.@test j_stop == 4
             Test.@test hit_dimension == 1
-            Test.@test total_euclidean ≈ sqrt(1.5 ^ 2 + 1 ^ 2)
+            # Test.@test total_euclidean ≈ sqrt(1.5 ^ 2 + 1 ^ 2)
             Test.@test delta_x_world_units_to_exit_start_tile ≈ 0.5
             Test.@test delta_y_world_units_to_exit_start_tile ≈ 0.5
         end
@@ -102,11 +102,11 @@ Test.@testset "RayCaster.jl" begin
             theta = convert(T2, pi)
             cos_theta = cos(theta)
             sin_theta = sin(theta)
-            i_stop, j_stop, hit_dimension, total_euclidean, delta_x_world_units_to_exit_start_tile, delta_y_world_units_to_exit_start_tile = RC.cast_ray_continous_world(obstacle_tile_map, x_start, y_start, cos_theta, sin_theta)
+            i_stop, j_stop, hit_dimension, delta_x_world_units_to_exit_start_tile, delta_y_world_units_to_exit_start_tile = RC.cast_ray_continous_world(obstacle_tile_map, x_start, y_start, cos_theta, sin_theta)
             Test.@test i_stop == 1
             Test.@test j_stop == 3
             Test.@test hit_dimension == 1
-            Test.@test total_euclidean ≈ 1.5
+            # Test.@test total_euclidean ≈ 1.5
             Test.@test delta_x_world_units_to_exit_start_tile ≈ 0.5
             Test.@test delta_y_world_units_to_exit_start_tile ≈ 0.5
         end
@@ -115,11 +115,11 @@ Test.@testset "RayCaster.jl" begin
             theta = convert(T2, pi + atan(2 / 3))
             cos_theta = cos(theta)
             sin_theta = sin(theta)
-            i_stop, j_stop, hit_dimension, total_euclidean, delta_x_world_units_to_exit_start_tile, delta_y_world_units_to_exit_start_tile = RC.cast_ray_continous_world(obstacle_tile_map, x_start, y_start, cos_theta, sin_theta)
+            i_stop, j_stop, hit_dimension, delta_x_world_units_to_exit_start_tile, delta_y_world_units_to_exit_start_tile = RC.cast_ray_continous_world(obstacle_tile_map, x_start, y_start, cos_theta, sin_theta)
             Test.@test i_stop == 1
             Test.@test j_stop == 2
             Test.@test hit_dimension == 1
-            Test.@test total_euclidean ≈ sqrt(1.5 ^ 2 + 1 ^ 2)
+            # Test.@test total_euclidean ≈ sqrt(1.5 ^ 2 + 1 ^ 2)
             Test.@test delta_x_world_units_to_exit_start_tile ≈ 0.5
             Test.@test delta_y_world_units_to_exit_start_tile ≈ 0.5
         end
@@ -128,11 +128,11 @@ Test.@testset "RayCaster.jl" begin
             theta = convert(T2, (3 * pi / 2) - atan(2 / 3))
             cos_theta = cos(theta)
             sin_theta = sin(theta)
-            i_stop, j_stop, hit_dimension, total_euclidean, delta_x_world_units_to_exit_start_tile, delta_y_world_units_to_exit_start_tile = RC.cast_ray_continous_world(obstacle_tile_map, x_start, y_start, cos_theta, sin_theta)
+            i_stop, j_stop, hit_dimension, delta_x_world_units_to_exit_start_tile, delta_y_world_units_to_exit_start_tile = RC.cast_ray_continous_world(obstacle_tile_map, x_start, y_start, cos_theta, sin_theta)
             Test.@test i_stop == 2
             Test.@test j_stop == 1
             Test.@test hit_dimension == 2
-            Test.@test total_euclidean ≈ sqrt(1.5 ^ 2 + 1 ^ 2)
+            # Test.@test total_euclidean ≈ sqrt(1.5 ^ 2 + 1 ^ 2)
             Test.@test delta_x_world_units_to_exit_start_tile ≈ 0.5
             Test.@test delta_y_world_units_to_exit_start_tile ≈ 0.5
         end
@@ -141,11 +141,11 @@ Test.@testset "RayCaster.jl" begin
             theta = convert(T2, 3 * pi / 2)
             cos_theta = cos(theta)
             sin_theta = sin(theta)
-            i_stop, j_stop, hit_dimension, total_euclidean, delta_x_world_units_to_exit_start_tile, delta_y_world_units_to_exit_start_tile = RC.cast_ray_continous_world(obstacle_tile_map, x_start, y_start, cos_theta, sin_theta)
+            i_stop, j_stop, hit_dimension, delta_x_world_units_to_exit_start_tile, delta_y_world_units_to_exit_start_tile = RC.cast_ray_continous_world(obstacle_tile_map, x_start, y_start, cos_theta, sin_theta)
             Test.@test i_stop == 3
             Test.@test j_stop == 1
             Test.@test hit_dimension == 2
-            Test.@test total_euclidean ≈ 1.5
+            # Test.@test total_euclidean ≈ 1.5
             Test.@test delta_x_world_units_to_exit_start_tile ≈ 0.5
             Test.@test delta_y_world_units_to_exit_start_tile ≈ 0.5
         end
@@ -154,11 +154,11 @@ Test.@testset "RayCaster.jl" begin
             theta = convert(T2, (3 * pi / 2) + atan(2 / 3))
             cos_theta = cos(theta)
             sin_theta = sin(theta)
-            i_stop, j_stop, hit_dimension, total_euclidean, delta_x_world_units_to_exit_start_tile, delta_y_world_units_to_exit_start_tile = RC.cast_ray_continous_world(obstacle_tile_map, x_start, y_start, cos_theta, sin_theta)
+            i_stop, j_stop, hit_dimension, delta_x_world_units_to_exit_start_tile, delta_y_world_units_to_exit_start_tile = RC.cast_ray_continous_world(obstacle_tile_map, x_start, y_start, cos_theta, sin_theta)
             Test.@test i_stop == 4
             Test.@test j_stop == 1
             Test.@test hit_dimension == 2
-            Test.@test total_euclidean ≈ sqrt(1.5 ^ 2 + 1 ^ 2)
+            # Test.@test total_euclidean ≈ sqrt(1.5 ^ 2 + 1 ^ 2)
             Test.@test delta_x_world_units_to_exit_start_tile ≈ 0.5
             Test.@test delta_y_world_units_to_exit_start_tile ≈ 0.5
         end
@@ -167,11 +167,11 @@ Test.@testset "RayCaster.jl" begin
             theta = convert(T2, 2 * pi - atan(2 / 3))
             cos_theta = cos(theta)
             sin_theta = sin(theta)
-            i_stop, j_stop, hit_dimension, total_euclidean, delta_x_world_units_to_exit_start_tile, delta_y_world_units_to_exit_start_tile = RC.cast_ray_continous_world(obstacle_tile_map, x_start, y_start, cos_theta, sin_theta)
+            i_stop, j_stop, hit_dimension, delta_x_world_units_to_exit_start_tile, delta_y_world_units_to_exit_start_tile = RC.cast_ray_continous_world(obstacle_tile_map, x_start, y_start, cos_theta, sin_theta)
             Test.@test i_stop == 5
             Test.@test j_stop == 2
             Test.@test hit_dimension == 1
-            Test.@test total_euclidean ≈ sqrt(1.5 ^ 2 + 1 ^ 2)
+            # Test.@test total_euclidean ≈ sqrt(1.5 ^ 2 + 1 ^ 2)
             Test.@test delta_x_world_units_to_exit_start_tile ≈ 0.5
             Test.@test delta_y_world_units_to_exit_start_tile ≈ 0.5
         end
