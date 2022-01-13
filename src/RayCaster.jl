@@ -2,11 +2,11 @@ module RayCaster
 
 convert_cell_to_tile(i::Integer, cells_per_tile::Integer) = (i - one(i)) ÷ cells_per_tile + one(i)
 
-function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, i_start_world_units, j_start_world_units, i_ray_direction, j_ray_direction, cells_per_tile)
-    I = typeof(i_start_world_units)
+function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, i_ray_start_cell, j_ray_start_cell, i_ray_direction, j_ray_direction, cells_per_tile)
+    I = typeof(i_ray_start_cell)
 
-    i_start_tile_units = convert_cell_to_tile(i_start_world_units, cells_per_tile)
-    j_start_tile_units = convert_cell_to_tile(j_start_world_units, cells_per_tile)
+    i_start_tile_units = convert_cell_to_tile(i_ray_start_cell, cells_per_tile)
+    j_start_tile_units = convert_cell_to_tile(j_ray_start_cell, cells_per_tile)
 
     delta_euclidean_per_world_unit_i = abs(j_ray_direction)
     delta_euclidean_per_world_unit_j = abs(i_ray_direction)
@@ -16,20 +16,20 @@ function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, i_start_world_units
 
     if i_ray_direction < zero(I)
         delta_i_tile_units = -one(I)
-        delta_i_world_units_to_exit_start_tile = (i_start_world_units - (i_start_tile_units - one(I)) * cells_per_tile)
+        delta_i_world_units_to_exit_start_tile = (i_ray_start_cell - (i_start_tile_units - one(I)) * cells_per_tile)
     else
         delta_i_tile_units = one(I)
-        delta_i_world_units_to_exit_start_tile = (i_start_tile_units * cells_per_tile - i_start_world_units + one(I))
+        delta_i_world_units_to_exit_start_tile = (i_start_tile_units * cells_per_tile - i_ray_start_cell + one(I))
     end
 
     delta_euclidean_i = delta_i_world_units_to_exit_start_tile * delta_euclidean_per_world_unit_i
 
     if j_ray_direction < zero(I)
         delta_j_tile_units = -one(I)
-        delta_j_world_units_to_exit_start_tile = (j_start_world_units - (j_start_tile_units - one(I)) * cells_per_tile)
+        delta_j_world_units_to_exit_start_tile = (j_ray_start_cell - (j_start_tile_units - one(I)) * cells_per_tile)
     else
         delta_j_tile_units = one(I)
-        delta_j_world_units_to_exit_start_tile = (j_start_tile_units * cells_per_tile - j_start_world_units + one(I))
+        delta_j_world_units_to_exit_start_tile = (j_start_tile_units * cells_per_tile - j_ray_start_cell + one(I))
     end
 
     delta_euclidean_j = delta_j_world_units_to_exit_start_tile * delta_euclidean_per_world_unit_j
