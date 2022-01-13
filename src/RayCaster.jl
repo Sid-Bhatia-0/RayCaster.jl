@@ -1,10 +1,12 @@
 module RayCaster
 
+convert_world_unit_to_tile_unit(i::Integer, world_units_per_tile_unit::Integer) = (i - one(i)) ÷ world_units_per_tile_unit + one(i)
+
 function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, i_start_world_units, j_start_world_units, delta_i_world_units, delta_j_world_units, world_units_per_tile_unit)
     I = typeof(i_start_world_units)
 
-    i_start_tile_units = i_start_world_units ÷ world_units_per_tile_unit + one(I)
-    j_start_tile_units = j_start_world_units ÷ world_units_per_tile_unit + one(I)
+    i_start_tile_units = convert_world_unit_to_tile_unit(i_start_world_units, world_units_per_tile_unit)
+    j_start_tile_units = convert_world_unit_to_tile_unit(j_start_world_units, world_units_per_tile_unit)
 
     delta_euclidean_per_world_unit_i = abs(delta_j_world_units)
     delta_euclidean_per_world_unit_j = abs(delta_i_world_units)
