@@ -52,7 +52,7 @@ function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, i_start_world_units
 
     end
 
-    return i_stop_tile_units, j_stop_tile_units, hit_dimension, delta_i_world_units_to_exit_start_tile, delta_j_world_units_to_exit_start_tile
+    return i_start_tile_units, j_start_tile_units, i_stop_tile_units, j_stop_tile_units, hit_dimension, delta_i_world_units_to_exit_start_tile, delta_j_world_units_to_exit_start_tile
 end
 
 end
