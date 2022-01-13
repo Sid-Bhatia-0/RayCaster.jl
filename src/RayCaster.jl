@@ -36,24 +36,33 @@ function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, i_ray_start_cell, j
 
     i_ray_stop_tile = i_ray_start_tile
     j_ray_stop_tile = j_ray_start_tile
-    hit_dimension = 1
-    steps_taken = 0
+    hit_dimension = 0
+    i_steps_taken = zero(I)
+    j_steps_taken = zero(I)
 
-    while !obstacle_tile_map[i_ray_stop_tile, j_ray_stop_tile] && steps_taken < max_steps
+    while !obstacle_tile_map[i_ray_stop_tile, j_ray_stop_tile] && i_steps_taken < max_steps && j_steps_taken < max_steps
         if (scaled_ray_length_when_traveling_along_i_axis <= scaled_ray_length_when_traveling_along_j_axis)
             scaled_ray_length_when_traveling_along_i_axis += scaled_increase_in_ray_length_per_tile_travelled_along_i_axis
             i_ray_stop_tile += i_tile_step_size
             hit_dimension = 1
+            i_steps_taken += one(I)
         else
             scaled_ray_length_when_traveling_along_j_axis += scaled_increase_in_ray_length_per_tile_travelled_along_j_axis
             j_ray_stop_tile += j_tile_step_size
             hit_dimension = 2
+            j_steps_taken += one(I)
         end
-
-        steps_taken += 1
     end
 
-    return i_ray_start_tile, j_ray_start_tile, i_ray_stop_tile, j_ray_stop_tile, hit_dimension, cells_travelled_along_i_axis_to_exit_ray_start_tile, cells_travelled_along_j_axis_to_exit_ray_start_tile
+    if hit_dimension == 1
+        signed_perpendicular_distance_to_obstacle = i_tile_step_size * (cells_travelled_along_i_axis_to_exit_ray_start_tile + (i_steps_taken - one(I)) * cells_per_tile_length)
+    elseif hit_dimension == 2
+        signed_perpendicular_distance_to_obstacle = j_tile_step_size * (cells_travelled_along_j_axis_to_exit_ray_start_tile + (j_steps_taken - one(I)) * cells_per_tile_length)
+    else
+        signed_perpendicular_distance_to_obstacle = zero(I)
+    end
+
+    return i_ray_start_tile, j_ray_start_tile, i_ray_stop_tile, j_ray_stop_tile, hit_dimension, signed_perpendicular_distance_to_obstacle
 end
 
 end
