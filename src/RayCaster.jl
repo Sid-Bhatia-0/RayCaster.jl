@@ -8,11 +8,11 @@ function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, i_ray_start_cell, j
     i_ray_start_tile = convert_cell_to_tile(i_ray_start_cell, cells_per_tile)
     j_ray_start_tile = convert_cell_to_tile(j_ray_start_cell, cells_per_tile)
 
-    delta_euclidean_per_world_unit_i = abs(j_ray_direction)
-    delta_euclidean_per_world_unit_j = abs(i_ray_direction)
+    scaled_increase_in_ray_length_per_cell_travelled_along_i_axis = abs(j_ray_direction)
+    scaled_increase_in_ray_length_per_cell_travelled_along_j_axis = abs(i_ray_direction)
 
-    delta_euclidean_per_tile_unit_i = cells_per_tile * delta_euclidean_per_world_unit_i
-    delta_euclidean_per_tile_unit_j = cells_per_tile * delta_euclidean_per_world_unit_j
+    delta_euclidean_per_tile_unit_i = cells_per_tile * scaled_increase_in_ray_length_per_cell_travelled_along_i_axis
+    delta_euclidean_per_tile_unit_j = cells_per_tile * scaled_increase_in_ray_length_per_cell_travelled_along_j_axis
 
     if i_ray_direction < zero(I)
         delta_i_tile_units = -one(I)
@@ -22,7 +22,7 @@ function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, i_ray_start_cell, j
         delta_i_world_units_to_exit_start_tile = (i_ray_start_tile * cells_per_tile - i_ray_start_cell + one(I))
     end
 
-    delta_euclidean_i = delta_i_world_units_to_exit_start_tile * delta_euclidean_per_world_unit_i
+    delta_euclidean_i = delta_i_world_units_to_exit_start_tile * scaled_increase_in_ray_length_per_cell_travelled_along_i_axis
 
     if j_ray_direction < zero(I)
         delta_j_tile_units = -one(I)
@@ -32,7 +32,7 @@ function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, i_ray_start_cell, j
         delta_j_world_units_to_exit_start_tile = (j_ray_start_tile * cells_per_tile - j_ray_start_cell + one(I))
     end
 
-    delta_euclidean_j = delta_j_world_units_to_exit_start_tile * delta_euclidean_per_world_unit_j
+    delta_euclidean_j = delta_j_world_units_to_exit_start_tile * scaled_increase_in_ray_length_per_cell_travelled_along_j_axis
 
     i_stop_tile_units = i_ray_start_tile
     j_stop_tile_units = j_ray_start_tile
