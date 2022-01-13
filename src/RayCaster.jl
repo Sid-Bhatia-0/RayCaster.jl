@@ -11,8 +11,8 @@ function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, i_ray_start_cell, j
     scaled_increase_in_ray_length_per_cell_travelled_along_i_axis = abs(j_ray_direction)
     scaled_increase_in_ray_length_per_cell_travelled_along_j_axis = abs(i_ray_direction)
 
-    delta_euclidean_per_tile_unit_i = cells_per_tile * scaled_increase_in_ray_length_per_cell_travelled_along_i_axis
-    delta_euclidean_per_tile_unit_j = cells_per_tile * scaled_increase_in_ray_length_per_cell_travelled_along_j_axis
+    scaled_increase_in_ray_length_per_tile_travelled_along_i_axis = cells_per_tile * scaled_increase_in_ray_length_per_cell_travelled_along_i_axis
+    scaled_increase_in_ray_length_per_tile_travelled_along_j_axis = cells_per_tile * scaled_increase_in_ray_length_per_cell_travelled_along_j_axis
 
     if i_ray_direction < zero(I)
         delta_i_tile_units = -one(I)
@@ -41,11 +41,11 @@ function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, i_ray_start_cell, j
     while !obstacle_tile_map[i_stop_tile_units, j_stop_tile_units]
 
         if (delta_euclidean_i <= delta_euclidean_j)
-            delta_euclidean_i += delta_euclidean_per_tile_unit_i
+            delta_euclidean_i += scaled_increase_in_ray_length_per_tile_travelled_along_i_axis
             i_stop_tile_units += delta_i_tile_units
             hit_dimension = 1
         else
-            delta_euclidean_j += delta_euclidean_per_tile_unit_j
+            delta_euclidean_j += scaled_increase_in_ray_length_per_tile_travelled_along_j_axis
             j_stop_tile_units += delta_j_tile_units
             hit_dimension = 2
         end
