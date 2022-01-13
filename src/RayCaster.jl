@@ -1,35 +1,35 @@
 module RayCaster
 
-convert_world_unit_to_tile_unit(i::Integer, world_units_per_tile_unit::Integer) = (i - one(i)) ÷ world_units_per_tile_unit + one(i)
+convert_cell_to_tile(i::Integer, cells_per_tile::Integer) = (i - one(i)) ÷ cells_per_tile + one(i)
 
-function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, i_start_world_units, j_start_world_units, delta_i_world_units, delta_j_world_units, world_units_per_tile_unit)
+function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, i_start_world_units, j_start_world_units, delta_i_world_units, delta_j_world_units, cells_per_tile)
     I = typeof(i_start_world_units)
 
-    i_start_tile_units = convert_world_unit_to_tile_unit(i_start_world_units, world_units_per_tile_unit)
-    j_start_tile_units = convert_world_unit_to_tile_unit(j_start_world_units, world_units_per_tile_unit)
+    i_start_tile_units = convert_cell_to_tile(i_start_world_units, cells_per_tile)
+    j_start_tile_units = convert_cell_to_tile(j_start_world_units, cells_per_tile)
 
     delta_euclidean_per_world_unit_i = abs(delta_j_world_units)
     delta_euclidean_per_world_unit_j = abs(delta_i_world_units)
 
-    delta_euclidean_per_tile_unit_i = world_units_per_tile_unit * delta_euclidean_per_world_unit_i
-    delta_euclidean_per_tile_unit_j = world_units_per_tile_unit * delta_euclidean_per_world_unit_j
+    delta_euclidean_per_tile_unit_i = cells_per_tile * delta_euclidean_per_world_unit_i
+    delta_euclidean_per_tile_unit_j = cells_per_tile * delta_euclidean_per_world_unit_j
 
     if delta_i_world_units < zero(I)
         delta_i_tile_units = -one(I)
-        delta_i_world_units_to_exit_start_tile = (i_start_world_units - (i_start_tile_units - one(I)) * world_units_per_tile_unit)
+        delta_i_world_units_to_exit_start_tile = (i_start_world_units - (i_start_tile_units - one(I)) * cells_per_tile)
     else
         delta_i_tile_units = one(I)
-        delta_i_world_units_to_exit_start_tile = (i_start_tile_units * world_units_per_tile_unit - i_start_world_units + one(I))
+        delta_i_world_units_to_exit_start_tile = (i_start_tile_units * cells_per_tile - i_start_world_units + one(I))
     end
 
     delta_euclidean_i = delta_i_world_units_to_exit_start_tile * delta_euclidean_per_world_unit_i
 
     if delta_j_world_units < zero(I)
         delta_j_tile_units = -one(I)
-        delta_j_world_units_to_exit_start_tile = (j_start_world_units - (j_start_tile_units - one(I)) * world_units_per_tile_unit)
+        delta_j_world_units_to_exit_start_tile = (j_start_world_units - (j_start_tile_units - one(I)) * cells_per_tile)
     else
         delta_j_tile_units = one(I)
-        delta_j_world_units_to_exit_start_tile = (j_start_tile_units * world_units_per_tile_unit - j_start_world_units + one(I))
+        delta_j_world_units_to_exit_start_tile = (j_start_tile_units * cells_per_tile - j_start_world_units + one(I))
     end
 
     delta_euclidean_j = delta_j_world_units_to_exit_start_tile * delta_euclidean_per_world_unit_j
