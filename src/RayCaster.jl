@@ -1,6 +1,6 @@
 module RayCaster
 
-function cast_ray_discrete_world(obstacle_tile_map::AbstractArray{Bool, 2}, i_start_world_units, j_start_world_units, delta_i_world_units, delta_j_world_units, world_units_per_tile_unit)
+function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, i_start_world_units, j_start_world_units, delta_i_world_units, delta_j_world_units, world_units_per_tile_unit)
     I = typeof(i_start_world_units)
 
     i_start_tile_units = i_start_world_units ÷ world_units_per_tile_unit + one(I)
