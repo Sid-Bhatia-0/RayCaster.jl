@@ -1,58 +1,58 @@
 module RayCaster
 
-convert_world_unit_to_tile_unit(i::Integer, world_units_per_tile_unit::Integer) = (i - one(i)) ÷ world_units_per_tile_unit + one(i)
+convert_cell_coordinate_to_tile_coordinate(i::Integer, cells_per_tile_length::Integer) = (i - one(i)) ÷ cells_per_tile_length + one(i)
 
-function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, i_start_world_units, j_start_world_units, delta_i_world_units, delta_j_world_units, world_units_per_tile_unit)
-    I = typeof(i_start_world_units)
+function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, i_ray_start_cell, j_ray_start_cell, i_ray_direction, j_ray_direction, cells_per_tile_length)
+    I = typeof(i_ray_start_cell)
 
-    i_start_tile_units = convert_world_unit_to_tile_unit(i_start_world_units, world_units_per_tile_unit)
-    j_start_tile_units = convert_world_unit_to_tile_unit(j_start_world_units, world_units_per_tile_unit)
+    i_ray_start_tile = convert_cell_coordinate_to_tile_coordinate(i_ray_start_cell, cells_per_tile_length)
+    j_ray_start_tile = convert_cell_coordinate_to_tile_coordinate(j_ray_start_cell, cells_per_tile_length)
 
-    delta_euclidean_per_world_unit_i = abs(delta_j_world_units)
-    delta_euclidean_per_world_unit_j = abs(delta_i_world_units)
+    scaled_increase_in_ray_length_per_cell_travelled_along_i_axis = abs(j_ray_direction)
+    scaled_increase_in_ray_length_per_cell_travelled_along_j_axis = abs(i_ray_direction)
 
-    delta_euclidean_per_tile_unit_i = world_units_per_tile_unit * delta_euclidean_per_world_unit_i
-    delta_euclidean_per_tile_unit_j = world_units_per_tile_unit * delta_euclidean_per_world_unit_j
+    scaled_increase_in_ray_length_per_tile_travelled_along_i_axis = cells_per_tile_length * scaled_increase_in_ray_length_per_cell_travelled_along_i_axis
+    scaled_increase_in_ray_length_per_tile_travelled_along_j_axis = cells_per_tile_length * scaled_increase_in_ray_length_per_cell_travelled_along_j_axis
 
-    if delta_i_world_units < zero(I)
-        delta_i_tile_units = -one(I)
-        delta_i_world_units_to_exit_start_tile = (i_start_world_units - (i_start_tile_units - one(I)) * world_units_per_tile_unit)
+    if i_ray_direction < zero(I)
+        i_tile_step_size = -one(I)
+        cells_travelled_along_i_axis_to_exit_ray_start_tile = (i_ray_start_cell - (i_ray_start_tile - one(I)) * cells_per_tile_length)
     else
-        delta_i_tile_units = one(I)
-        delta_i_world_units_to_exit_start_tile = (i_start_tile_units * world_units_per_tile_unit - i_start_world_units + one(I))
+        i_tile_step_size = one(I)
+        cells_travelled_along_i_axis_to_exit_ray_start_tile = (i_ray_start_tile * cells_per_tile_length - i_ray_start_cell + one(I))
     end
 
-    delta_euclidean_i = delta_i_world_units_to_exit_start_tile * delta_euclidean_per_world_unit_i
+    scaled_ray_length_when_traveling_along_i_axis = cells_travelled_along_i_axis_to_exit_ray_start_tile * scaled_increase_in_ray_length_per_cell_travelled_along_i_axis
 
-    if delta_j_world_units < zero(I)
-        delta_j_tile_units = -one(I)
-        delta_j_world_units_to_exit_start_tile = (j_start_world_units - (j_start_tile_units - one(I)) * world_units_per_tile_unit)
+    if j_ray_direction < zero(I)
+        j_tile_step_size = -one(I)
+        cells_travelled_along_j_axis_to_exit_ray_start_tile = (j_ray_start_cell - (j_ray_start_tile - one(I)) * cells_per_tile_length)
     else
-        delta_j_tile_units = one(I)
-        delta_j_world_units_to_exit_start_tile = (j_start_tile_units * world_units_per_tile_unit - j_start_world_units + one(I))
+        j_tile_step_size = one(I)
+        cells_travelled_along_j_axis_to_exit_ray_start_tile = (j_ray_start_tile * cells_per_tile_length - j_ray_start_cell + one(I))
     end
 
-    delta_euclidean_j = delta_j_world_units_to_exit_start_tile * delta_euclidean_per_world_unit_j
+    scaled_ray_length_when_traveling_along_j_axis = cells_travelled_along_j_axis_to_exit_ray_start_tile * scaled_increase_in_ray_length_per_cell_travelled_along_j_axis
 
-    i_stop_tile_units = i_start_tile_units
-    j_stop_tile_units = j_start_tile_units
+    i_ray_stop_tile = i_ray_start_tile
+    j_ray_stop_tile = j_ray_start_tile
     hit_dimension = 1
 
-    while !obstacle_tile_map[i_stop_tile_units, j_stop_tile_units]
+    while !obstacle_tile_map[i_ray_stop_tile, j_ray_stop_tile]
 
-        if (delta_euclidean_i <= delta_euclidean_j)
-            delta_euclidean_i += delta_euclidean_per_tile_unit_i
-            i_stop_tile_units += delta_i_tile_units
+        if (scaled_ray_length_when_traveling_along_i_axis <= scaled_ray_length_when_traveling_along_j_axis)
+            scaled_ray_length_when_traveling_along_i_axis += scaled_increase_in_ray_length_per_tile_travelled_along_i_axis
+            i_ray_stop_tile += i_tile_step_size
             hit_dimension = 1
         else
-            delta_euclidean_j += delta_euclidean_per_tile_unit_j
-            j_stop_tile_units += delta_j_tile_units
+            scaled_ray_length_when_traveling_along_j_axis += scaled_increase_in_ray_length_per_tile_travelled_along_j_axis
+            j_ray_stop_tile += j_tile_step_size
             hit_dimension = 2
         end
 
     end
 
-    return i_start_tile_units, j_start_tile_units, i_stop_tile_units, j_stop_tile_units, hit_dimension, delta_i_world_units_to_exit_start_tile, delta_j_world_units_to_exit_start_tile
+    return i_ray_start_tile, j_ray_start_tile, i_ray_stop_tile, j_ray_stop_tile, hit_dimension, cells_travelled_along_i_axis_to_exit_ray_start_tile, cells_travelled_along_j_axis_to_exit_ray_start_tile
 end
 
 end
