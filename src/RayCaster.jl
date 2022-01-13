@@ -34,25 +34,25 @@ function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, i_ray_start_cell, j
 
     scaled_ray_length_when_traveling_along_j_axis = cells_travelled_along_j_axis_to_exit_ray_start_tile * scaled_increase_in_ray_length_per_cell_travelled_along_j_axis
 
-    i_stop_tile_units = i_ray_start_tile
-    j_stop_tile_units = j_ray_start_tile
+    i_ray_stop_tile = i_ray_start_tile
+    j_ray_stop_tile = j_ray_start_tile
     hit_dimension = 1
 
-    while !obstacle_tile_map[i_stop_tile_units, j_stop_tile_units]
+    while !obstacle_tile_map[i_ray_stop_tile, j_ray_stop_tile]
 
         if (scaled_ray_length_when_traveling_along_i_axis <= scaled_ray_length_when_traveling_along_j_axis)
             scaled_ray_length_when_traveling_along_i_axis += scaled_increase_in_ray_length_per_tile_travelled_along_i_axis
-            i_stop_tile_units += i_tile_step_size
+            i_ray_stop_tile += i_tile_step_size
             hit_dimension = 1
         else
             scaled_ray_length_when_traveling_along_j_axis += scaled_increase_in_ray_length_per_tile_travelled_along_j_axis
-            j_stop_tile_units += j_tile_step_size
+            j_ray_stop_tile += j_tile_step_size
             hit_dimension = 2
         end
 
     end
 
-    return i_ray_start_tile, j_ray_start_tile, i_stop_tile_units, j_stop_tile_units, hit_dimension, cells_travelled_along_i_axis_to_exit_ray_start_tile, cells_travelled_along_j_axis_to_exit_ray_start_tile
+    return i_ray_start_tile, j_ray_start_tile, i_ray_stop_tile, j_ray_stop_tile, hit_dimension, cells_travelled_along_i_axis_to_exit_ray_start_tile, cells_travelled_along_j_axis_to_exit_ray_start_tile
 end
 
 end
