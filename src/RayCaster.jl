@@ -1,6 +1,6 @@
 module RayCaster
 
-convert_cell_to_tile_along_i_axis(i_cell::Integer, cells_per_tile_length::Integer) = (i_cell - one(i_cell)) ÷ cells_per_tile_length + one(i_cell)
+convert_cell_to_tile_along_i_axis(i_cell, cells_per_tile_length) = (i_cell - one(i_cell)) ÷ cells_per_tile_length + one(i_cell)
 
 function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, i_ray_start_cell, j_ray_start_cell, i_ray_direction, j_ray_direction, cells_per_tile_length, max_steps)
     I = typeof(i_ray_start_cell)
