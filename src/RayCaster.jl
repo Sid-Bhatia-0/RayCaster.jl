@@ -1,10 +1,10 @@
 module RayCaster
 
 cell_coordinate_to_tile_coordinate(i_cell, cells_per_tile_1d) = (i_cell - one(i_cell)) ÷ cells_per_tile_1d + one(i_cell)
-convert_cell_to_tile(i_cell, j_cell, cells_per_tile_1d) = (cell_coordinate_to_tile_coordinate(i_cell, cells_per_tile_1d), cell_coordinate_to_tile_coordinate(j_cell, cells_per_tile_1d))
+cell_to_tile(i_cell, j_cell, cells_per_tile_1d) = (cell_coordinate_to_tile_coordinate(i_cell, cells_per_tile_1d), cell_coordinate_to_tile_coordinate(j_cell, cells_per_tile_1d))
 
 function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, cells_per_tile_1d, i_ray_start_cell, j_ray_start_cell, i_ray_direction, j_ray_direction, max_steps)
-    i_ray_start_tile, j_ray_start_tile = convert_cell_to_tile(i_ray_start_cell, j_ray_start_cell, cells_per_tile_1d)
+    i_ray_start_tile, j_ray_start_tile = cell_to_tile(i_ray_start_cell, j_ray_start_cell, cells_per_tile_1d)
 
     return cast_ray(obstacle_tile_map, cells_per_tile_1d, i_ray_start_cell, j_ray_start_cell, i_ray_start_tile, j_ray_start_tile, i_ray_direction, j_ray_direction, max_steps)
 end
