@@ -1,39 +1,39 @@
 module RayCaster
 
-convert_cell_coordinate_to_tile_coordinate(i_cell, cells_per_tile_along_axis) = (i_cell - one(i_cell)) ÷ cells_per_tile_along_axis + one(i_cell)
-convert_cell_to_tile(i_cell, j_cell, cells_per_tile_along_axis) = (convert_cell_coordinate_to_tile_coordinate(i_cell, cells_per_tile_along_axis), convert_cell_coordinate_to_tile_coordinate(j_cell, cells_per_tile_along_axis))
+cell_coordinate_to_tile_coordinate(i_cell, cells_per_tile_1d) = (i_cell - one(i_cell)) ÷ cells_per_tile_1d + one(i_cell)
+cell_to_tile(i_cell, j_cell, cells_per_tile_1d) = (cell_coordinate_to_tile_coordinate(i_cell, cells_per_tile_1d), cell_coordinate_to_tile_coordinate(j_cell, cells_per_tile_1d))
 
-function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, cells_per_tile_along_axis, i_ray_start_cell, j_ray_start_cell, i_ray_direction, j_ray_direction, max_steps)
-    i_ray_start_tile, j_ray_start_tile = convert_cell_to_tile(i_ray_start_cell, j_ray_start_cell, cells_per_tile_along_axis)
+function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, cells_per_tile_1d, i_ray_start_cell, j_ray_start_cell, i_ray_direction, j_ray_direction, max_steps)
+    i_ray_start_tile, j_ray_start_tile = cell_to_tile(i_ray_start_cell, j_ray_start_cell, cells_per_tile_1d)
 
-    return cast_ray(obstacle_tile_map, cells_per_tile_along_axis, i_ray_start_cell, j_ray_start_cell, i_ray_start_tile, j_ray_start_tile, i_ray_direction, j_ray_direction, max_steps)
+    return cast_ray(obstacle_tile_map, cells_per_tile_1d, i_ray_start_cell, j_ray_start_cell, i_ray_start_tile, j_ray_start_tile, i_ray_direction, j_ray_direction, max_steps)
 end
 
-function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, cells_per_tile_along_axis, i_ray_start_cell, j_ray_start_cell, i_ray_start_tile, j_ray_start_tile, i_ray_direction, j_ray_direction, max_steps)
+function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, cells_per_tile_1d, i_ray_start_cell, j_ray_start_cell, i_ray_start_tile, j_ray_start_tile, i_ray_direction, j_ray_direction, max_steps)
     I = typeof(i_ray_start_cell)
 
     scaled_increase_in_ray_length_per_cell_travelled_along_i_axis = abs(j_ray_direction)
     scaled_increase_in_ray_length_per_cell_travelled_along_j_axis = abs(i_ray_direction)
 
-    scaled_increase_in_ray_length_per_tile_travelled_along_i_axis = cells_per_tile_along_axis * scaled_increase_in_ray_length_per_cell_travelled_along_i_axis
-    scaled_increase_in_ray_length_per_tile_travelled_along_j_axis = cells_per_tile_along_axis * scaled_increase_in_ray_length_per_cell_travelled_along_j_axis
+    scaled_increase_in_ray_length_per_tile_travelled_along_i_axis = cells_per_tile_1d * scaled_increase_in_ray_length_per_cell_travelled_along_i_axis
+    scaled_increase_in_ray_length_per_tile_travelled_along_j_axis = cells_per_tile_1d * scaled_increase_in_ray_length_per_cell_travelled_along_j_axis
 
     if i_ray_direction < zero(I)
         i_tile_step_size = -one(I)
-        cells_travelled_along_i_axis_to_exit_ray_start_tile = (i_ray_start_cell - (i_ray_start_tile - one(I)) * cells_per_tile_along_axis)
+        cells_travelled_along_i_axis_to_exit_ray_start_tile = (i_ray_start_cell - (i_ray_start_tile - one(I)) * cells_per_tile_1d)
     else
         i_tile_step_size = one(I)
-        cells_travelled_along_i_axis_to_exit_ray_start_tile = (i_ray_start_tile * cells_per_tile_along_axis - i_ray_start_cell + one(I))
+        cells_travelled_along_i_axis_to_exit_ray_start_tile = (i_ray_start_tile * cells_per_tile_1d - i_ray_start_cell + one(I))
     end
 
     scaled_ray_length_when_traveling_along_i_axis = cells_travelled_along_i_axis_to_exit_ray_start_tile * scaled_increase_in_ray_length_per_cell_travelled_along_i_axis
 
     if j_ray_direction < zero(I)
         j_tile_step_size = -one(I)
-        cells_travelled_along_j_axis_to_exit_ray_start_tile = (j_ray_start_cell - (j_ray_start_tile - one(I)) * cells_per_tile_along_axis)
+        cells_travelled_along_j_axis_to_exit_ray_start_tile = (j_ray_start_cell - (j_ray_start_tile - one(I)) * cells_per_tile_1d)
     else
         j_tile_step_size = one(I)
-        cells_travelled_along_j_axis_to_exit_ray_start_tile = (j_ray_start_tile * cells_per_tile_along_axis - j_ray_start_cell + one(I))
+        cells_travelled_along_j_axis_to_exit_ray_start_tile = (j_ray_start_tile * cells_per_tile_1d - j_ray_start_cell + one(I))
     end
 
     scaled_ray_length_when_traveling_along_j_axis = cells_travelled_along_j_axis_to_exit_ray_start_tile * scaled_increase_in_ray_length_per_cell_travelled_along_j_axis
@@ -59,9 +59,9 @@ function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, cells_per_tile_alon
     end
 
     if hit_dimension == 1
-        signed_perpendicular_distance_to_obstacle = i_tile_step_size * (cells_travelled_along_i_axis_to_exit_ray_start_tile + (i_steps_taken - one(I)) * cells_per_tile_along_axis)
+        signed_perpendicular_distance_to_obstacle = i_tile_step_size * (cells_travelled_along_i_axis_to_exit_ray_start_tile + (i_steps_taken - one(I)) * cells_per_tile_1d)
     elseif hit_dimension == 2
-        signed_perpendicular_distance_to_obstacle = j_tile_step_size * (cells_travelled_along_j_axis_to_exit_ray_start_tile + (j_steps_taken - one(I)) * cells_per_tile_along_axis)
+        signed_perpendicular_distance_to_obstacle = j_tile_step_size * (cells_travelled_along_j_axis_to_exit_ray_start_tile + (j_steps_taken - one(I)) * cells_per_tile_1d)
     else
         signed_perpendicular_distance_to_obstacle = zero(I)
     end
