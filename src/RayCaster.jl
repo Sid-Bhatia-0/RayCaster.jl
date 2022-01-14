@@ -62,7 +62,7 @@ function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, i_ray_start_cell, j
         signed_perpendicular_distance_to_obstacle = zero(I)
     end
 
-    return i_ray_start_tile, j_ray_start_tile, i_ray_stop_tile, j_ray_stop_tile, hit_dimension, signed_perpendicular_distance_to_obstacle
+    return i_ray_stop_tile, j_ray_stop_tile, hit_dimension, signed_perpendicular_distance_to_obstacle
 end
 
 end
