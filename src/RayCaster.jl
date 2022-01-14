@@ -3,10 +3,14 @@ module RayCaster
 convert_cell_coordinate_to_tile_coordinate(i_cell, cells_per_tile_along_axis) = (i_cell - one(i_cell)) ÷ cells_per_tile_along_axis + one(i_cell)
 
 function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, cells_per_tile_along_axis, i_ray_start_cell, j_ray_start_cell, i_ray_direction, j_ray_direction, max_steps)
-    I = typeof(i_ray_start_cell)
-
     i_ray_start_tile = convert_cell_coordinate_to_tile_coordinate(i_ray_start_cell, cells_per_tile_along_axis)
     j_ray_start_tile = convert_cell_coordinate_to_tile_coordinate(j_ray_start_cell, cells_per_tile_along_axis)
+
+    return cast_ray(obstacle_tile_map, cells_per_tile_along_axis, i_ray_start_cell, j_ray_start_cell, i_ray_start_tile, j_ray_start_tile, i_ray_direction, j_ray_direction, max_steps)
+end
+
+function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, cells_per_tile_along_axis, i_ray_start_cell, j_ray_start_cell, i_ray_start_tile, j_ray_start_tile, i_ray_direction, j_ray_direction, max_steps)
+    I = typeof(i_ray_start_cell)
 
     scaled_increase_in_ray_length_per_cell_travelled_along_i_axis = abs(j_ray_direction)
     scaled_increase_in_ray_length_per_cell_travelled_along_j_axis = abs(i_ray_direction)
