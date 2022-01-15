@@ -13,9 +13,9 @@ Test.@testset "RayCaster.jl" begin
     height_obstacle_tile_map = size(obstacle_tile_map, 1)
     width_obstacle_tile_map = size(obstacle_tile_map, 2)
     max_steps = 1024
+    I = Int
 
-    Test.@testset "Discrete world" begin
-        I = Int
+    Test.@testset "cells_per_tile_1d = 8" begin
         cells_per_tile_1d = convert(I, 8)
 
         i_ray_start_cell = convert(I, height_obstacle_tile_map * cells_per_tile_1d ÷ 2 + 1)
