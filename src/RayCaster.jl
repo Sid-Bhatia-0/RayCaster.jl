@@ -13,6 +13,8 @@ end
 function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, cells_per_tile_1d, i_ray_start_cell, j_ray_start_cell, i_ray_start_tile, j_ray_start_tile, i_ray_direction, j_ray_direction, max_steps)
     I = typeof(i_ray_start_cell)
 
+    @assert !(iszero(i_ray_direction) && iszero(j_ray_direction))
+
     if i_ray_direction < zero(I)
         i_tile_step_size = -one(I)
         cells_travelled_along_i_axis_to_exit_ray_start_tile = (i_ray_start_cell - (i_ray_start_tile - one(I)) * cells_per_tile_1d)
