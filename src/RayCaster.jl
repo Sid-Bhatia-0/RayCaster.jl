@@ -80,16 +80,23 @@ function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, cells_per_tile_1d, 
     if hit_dimension == 1
         height_ray_triangle = cells_travelled_along_i_axis_to_exit_ray_start_tile + (i_steps_taken - one(I)) * cells_per_tile_1d
         width_ray_triangle = div(height_ray_triangle * width_ray_direction_triangle, height_ray_direction_triangle, RoundNearest)
+        i_ray_stop_cell = i_ray_start_cell + sign_i_ray_direction * (height_ray_triangle - one(I))
+        j_ray_stop_cell_high = j_ray_hit_tile * cells_per_tile_1d
+        j_ray_stop_cell_low = j_ray_stop_cell_high - cells_per_tile_1d + one(I)
+        j_ray_stop_cell = clamp(j_ray_start_cell + sign_j_ray_direction * (width_ray_triangle - one(I)), j_ray_stop_cell_low, j_ray_stop_cell_high)
     elseif hit_dimension == 2
         width_ray_triangle = cells_travelled_along_j_axis_to_exit_ray_start_tile + (j_steps_taken - one(I)) * cells_per_tile_1d
         height_ray_triangle = div(width_ray_triangle * height_ray_direction_triangle, width_ray_direction_triangle, RoundNearest)
+        j_ray_stop_cell = j_ray_start_cell + sign_j_ray_direction * (width_ray_triangle - one(I))
+        i_ray_stop_cell_high = i_ray_hit_tile * cells_per_tile_1d
+        i_ray_stop_cell_low = i_ray_stop_cell_high - cells_per_tile_1d + one(I)
+        i_ray_stop_cell = clamp(i_ray_start_cell + sign_i_ray_direction * (height_ray_triangle - one(I)), i_ray_stop_cell_low, i_ray_stop_cell_high)
     else
         height_ray_triangle = one(I)
         width_ray_triangle = one(I)
+        i_ray_stop_cell = i_ray_start_cell
+        j_ray_stop_cell = j_ray_start_cell
     end
-
-    i_ray_stop_cell = i_ray_start_cell + sign_i_ray_direction * (height_ray_triangle - one(I))
-    j_ray_stop_cell = j_ray_start_cell + sign_j_ray_direction * (width_ray_triangle - one(I))
 
     return i_ray_stop_cell, j_ray_stop_cell, i_ray_hit_tile, j_ray_hit_tile, hit_dimension
 end
