@@ -18,8 +18,8 @@ Test.@testset "RayCaster.jl" begin
     Test.@testset "height_tile = 8" begin
         height_tile = convert(I, 8)
 
-        i_ray_start = convert(I, height_obstacle_tile_map * height_tile ÷ 2 + 1)
-        j_ray_start = convert(I, width_obstacle_tile_map * height_tile ÷ 2 + 1)
+        i_ray_start = convert(I, (height_obstacle_tile_map * height_tile) ÷ 2 + 1)
+        j_ray_start = convert(I, (width_obstacle_tile_map * height_tile) ÷ 2 + 1)
 
         Test.@testset "delta_i = 1, delta_j = 0" begin
             i_ray_direction = convert(I, 1)
