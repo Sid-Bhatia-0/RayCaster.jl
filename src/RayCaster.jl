@@ -10,6 +10,8 @@ function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, height_tile, i_ray_
 end
 
 function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, height_tile, i_ray_start, j_ray_start, i_ray_start_tile, j_ray_start_tile, i_ray_direction, j_ray_direction, max_steps)
+    @assert !(iszero(i_ray_direction) && iszero(j_ray_direction))
+
     I = typeof(i_ray_start)
 
     if i_ray_direction < zero(I)
