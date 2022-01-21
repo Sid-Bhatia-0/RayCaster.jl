@@ -606,4 +606,53 @@ Test.@testset "RayCaster.jl" begin
 
         Test.@test !RC.is_touching_obstacle(obstacle_tile_map, tile_length, 21, 21)
     end
+
+    Test.@testset "cast_ray_1d" begin
+        obstacle_tile_map = BitArray([1, 0, 0, 0, 1])
+        max_steps = 1024
+        I = Int
+        tile_length = convert(I, 8)
+        x_ray_start = convert(I, 25)
+        i_ray_start_tile = convert(I, 4)
+
+        Test.@testset "tile_length = 8" begin
+            tile_length = convert(I, 8)
+
+            Test.@testset "x_ray_start = 25" begin
+                x_ray_start = convert(I, 25)
+
+                Test.@testset "i_ray_direction = 2" begin
+                    i_ray_direction = convert(I, 2)
+                    i_ray_stop, i_ray_hit_tile = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, i_ray_start_tile, i_ray_direction, max_steps)
+                    Test.@test i_ray_stop == convert(I, 33)
+                    Test.@test i_ray_hit_tile == convert(I, 5)
+                end
+
+                Test.@testset "i_ray_direction = -2" begin
+                    i_ray_direction = convert(I, -2)
+                    i_ray_stop, i_ray_hit_tile = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, i_ray_start_tile, i_ray_direction, max_steps)
+                    Test.@test i_ray_stop == convert(I, 9)
+                    Test.@test i_ray_hit_tile == convert(I, 1)
+                end
+            end
+
+            Test.@testset "x_ray_start = 29" begin
+                x_ray_start = convert(I, 29)
+
+                Test.@testset "i_ray_direction = 2" begin
+                    i_ray_direction = convert(I, 2)
+                    i_ray_stop, i_ray_hit_tile = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, i_ray_start_tile, i_ray_direction, max_steps)
+                    Test.@test i_ray_stop == convert(I, 33)
+                    Test.@test i_ray_hit_tile == convert(I, 5)
+                end
+
+                Test.@testset "i_ray_direction = -2" begin
+                    i_ray_direction = convert(I, -2)
+                    i_ray_stop, i_ray_hit_tile = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, i_ray_start_tile, i_ray_direction, max_steps)
+                    Test.@test i_ray_stop == convert(I, 9)
+                    Test.@test i_ray_hit_tile == convert(I, 1)
+                end
+            end
+        end
+    end
 end
