@@ -9,8 +9,43 @@ function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, i_ray_
     return cast_ray(obstacle_tile_map, tile_length, i_ray_start, j_ray_start, i_ray_start_tile, j_ray_start_tile, i_ray_direction, j_ray_direction, max_steps)
 end
 
+get_tile_start(i, tile_length) = (i - one(i)) * tile_length + one(tile_length)
+get_tile_end(i, tile_length) = i * tile_length + one(tile_length)
+
+function cast_ray(obstacle_tile_map::AbstractArray{Bool, 1}, tile_length, i_ray_start, i_ray_start_tile, i_ray_direction, max_steps)
+    @assert !iszero(i_ray_direction)
+    @assert !obstacle_tile_map[i_ray_start_tile]
+
+    I = typeof(i_ray_start)
+
+    if i_ray_direction < zero(I)
+        i_tile_step_size = -one(I)
+        distance_to_exit_ray_start_tile = i_ray_start - get_tile_start(i_ray_start_tile, tile_length)
+    else
+        i_tile_step_size = one(I)
+        distance_to_exit_ray_start_tile = get_tile_end(i_ray_start_tile, tile_length) - i_ray_start
+    end
+
+    i_ray_hit_tile = i_ray_start_tile
+    i_steps_taken = zero(I)
+
+    while !obstacle_tile_map[i_ray_hit_tile] && i_steps_taken < max_steps
+        i_ray_hit_tile += i_tile_step_size
+        i_steps_taken += one(i_steps_taken)
+    end
+
+    total_distance_traveled = distance_to_exit_ray_start_tile + (i_steps_taken - one(I)) * tile_length
+    i_ray_stop = i_ray_start + i_tile_step_size * total_distance_traveled
+
+    return i_ray_stop, i_ray_hit_tile
+end
+
 function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, i_ray_start, j_ray_start, i_ray_start_tile, j_ray_start_tile, i_ray_direction, j_ray_direction, max_steps)
-    @assert !(iszero(i_ray_direction) && iszero(j_ray_direction))
+    iszero_i_ray_direction = iszero(i_ray_direction)
+    iszero_j_ray_direction = iszero(j_ray_direction)
+
+    @assert !(iszero_i_ray_direction && iszero_j_ray_direction)
+    @assert !obstacle_tile_map[i_ray_start_tile, j_ray_start_tile]
 
     I = typeof(i_ray_start)
 
@@ -25,10 +60,12 @@ function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, i_ray_
         sign_i_ray_direction = one(I)
         abs_i_ray_direction = i_ray_direction
     else
-        i_tile_step_size = zero(I)
-        cells_travelled_along_i_axis_to_exit_ray_start_tile = (i_ray_start_tile * tile_length + one(I) - i_ray_start)
-        sign_i_ray_direction = i_ray_direction
-        abs_i_ray_direction = i_ray_direction
+        obstacle_tile_map_1d = @view obstacle_tile_map[i_ray_start_tile, :]
+        j_ray_stop, j_ray_hit_tile = cast_ray(obstacle_tile_map_1d, tile_length, j_ray_start, j_ray_start_tile, j_ray_direction, max_steps)
+        i_ray_stop = i_ray_start
+        i_ray_hit_tile = i_ray_start_tile
+        hit_dimension = 2
+        return i_ray_stop, j_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension
     end
 
     if j_ray_direction < zero(I)
@@ -42,10 +79,12 @@ function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, i_ray_
         sign_j_ray_direction = one(I)
         abs_j_ray_direction = j_ray_direction
     else
-        j_tile_step_size = zero(I)
-        cells_travelled_along_j_axis_to_exit_ray_start_tile = (j_ray_start_tile * tile_length + one(I)- j_ray_start)
-        sign_j_ray_direction = j_ray_direction
-        abs_j_ray_direction = j_ray_direction
+        obstacle_tile_map_1d = @view obstacle_tile_map[:, j_ray_start_tile]
+        i_ray_stop, i_ray_hit_tile = cast_ray(obstacle_tile_map_1d, tile_length, i_ray_start, i_ray_start_tile, i_ray_direction, max_steps)
+        j_ray_stop = j_ray_start
+        j_ray_hit_tile = j_ray_start_tile
+        hit_dimension = 1
+        return i_ray_stop, j_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension
     end
 
     height_ray_direction_triangle = abs_i_ray_direction + one(I)
@@ -84,7 +123,7 @@ function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, i_ray_
         j_ray_stop_high = j_ray_hit_tile * tile_length
         j_ray_stop_low = j_ray_stop_high - tile_length + one(I)
         j_ray_stop = clamp(j_ray_start + sign_j_ray_direction * rounded_width_ray_triangle, j_ray_stop_low, j_ray_stop_high)
-    elseif hit_dimension == 2
+    else
         width_ray_triangle = cells_travelled_along_j_axis_to_exit_ray_start_tile + (j_steps_taken - one(I)) * tile_length
         height_ray_triangle = (width_ray_triangle * abs_i_ray_direction) // abs_j_ray_direction
         rounded_height_ray_triangle = round(I, height_ray_triangle, RoundDown)
@@ -92,9 +131,6 @@ function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, i_ray_
         i_ray_stop_high = i_ray_hit_tile * tile_length
         i_ray_stop_low = i_ray_stop_high - tile_length + one(I)
         i_ray_stop = clamp(i_ray_start + sign_i_ray_direction * rounded_height_ray_triangle, i_ray_stop_low, i_ray_stop_high)
-    else
-        i_ray_stop = i_ray_start
-        j_ray_stop = j_ray_start
     end
 
     return i_ray_stop, j_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension

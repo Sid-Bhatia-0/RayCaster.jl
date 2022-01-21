@@ -563,22 +563,4 @@ Test.@testset "RayCaster.jl" begin
             Test.@test hit_dimension == 1
         end
     end
-
-    Test.@testset "starting inside an obstacle tile" begin
-        tile_length = convert(I, 8)
-
-        i_ray_start = convert(I, 3)
-        j_ray_start = convert(I, 4)
-
-        Test.@testset "delta_i = 1, delta_j = 0" begin
-            i_ray_direction = convert(I, 1)
-            j_ray_direction = convert(I, 0)
-            i_ray_stop, j_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension = RC.cast_ray(obstacle_tile_map, tile_length, i_ray_start, j_ray_start, i_ray_direction, j_ray_direction, max_steps)
-            Test.@test i_ray_stop == convert(I, 3)
-            Test.@test j_ray_stop == convert(I, 4)
-            Test.@test i_ray_hit_tile == convert(I, 1)
-            Test.@test j_ray_hit_tile == convert(I, 1)
-            Test.@test hit_dimension == 0
-        end
-    end
 end
