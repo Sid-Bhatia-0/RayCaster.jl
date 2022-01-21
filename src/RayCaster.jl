@@ -103,7 +103,7 @@ function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, i_ray_
     iszero_j_ray_direction = iszero(j_ray_direction)
 
     @assert !(iszero_i_ray_direction && iszero_j_ray_direction)
-    @assert !obstacle_tile_map[i_ray_start_tile, j_ray_start_tile]
+    @assert !is_touching_obstacle(obstacle_tile_map, tile_length, i_ray_start, j_ray_start)
 
     I = typeof(i_ray_start)
 
