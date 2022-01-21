@@ -128,6 +128,10 @@ function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, x_ray_
 
     @assert !(iszero_i_ray_direction && iszero_j_ray_direction)
     @assert !is_touching_obstacle(obstacle_tile_map, tile_length, x_ray_start, y_ray_start)
+    @assert !(i_ray_start_tile == firstindex(obstacle_tile_map, 1))
+    @assert !(j_ray_start_tile == firstindex(obstacle_tile_map, 2))
+    @assert !(i_ray_start_tile == lastindex(obstacle_tile_map, 1))
+    @assert !(j_ray_start_tile == lastindex(obstacle_tile_map, 2))
 
     I = typeof(x_ray_start)
 
