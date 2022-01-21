@@ -1,5 +1,29 @@
 module RayCaster
 
+function is_touching_obstacle(obstacle_tile_map::AbstractArray{Bool, 1}, tile_length, x)
+    i_tile = fld1(x, tile_length)
+
+    I = typeof(i_tile)
+
+    x_tile_start = get_tile_start(i_tile, tile_length)
+    x_tile_end = get_tile_end(i_tile, tile_length)
+
+    i_tile_before = i_tile - one(I)
+    i_tile_after = i_tile + one(I)
+
+    is_obstacle_present_1 = checkbounds(Bool, obstacle_tile_map, i_tile_before) && obstacle_tile_map[i_tile_before]
+    is_obstacle_present_2 = checkbounds(Bool, obstacle_tile_map, i_tile) && obstacle_tile_map[i_tile]
+    is_obstacle_present_3 = checkbounds(Bool, obstacle_tile_map, i_tile_after) && obstacle_tile_map[i_tile_after]
+
+    if x == x_tile_start
+        return is_obstacle_present_1 || is_obstacle_present_2
+    elseif x == x_tile_end
+        return is_obstacle_present_2 || is_obstacle_present_3
+    else
+        return is_obstacle_present_2
+    end
+end
+
 function is_touching_obstacle(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, x, y)
     i_tile = fld1(x, tile_length)
     j_tile = fld1(y, tile_length)
@@ -72,7 +96,7 @@ get_tile_end(i, tile_length) = i * tile_length + one(tile_length)
 
 function cast_ray(obstacle_tile_map::AbstractArray{Bool, 1}, tile_length, x_ray_start, i_ray_start_tile, i_ray_direction, max_steps)
     @assert !iszero(i_ray_direction)
-    @assert !obstacle_tile_map[i_ray_start_tile]
+    @assert !is_touching_obstacle(obstacle_tile_map, tile_length, x_ray_start)
 
     I = typeof(x_ray_start)
 
