@@ -77,9 +77,11 @@ function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, x_ray_
     if hit_dimension == 1
         height_ray_triangle = distance_traveled_along_i_axis_to_exit_ray_start_tile + (i_steps_taken - one(i_steps_taken)) * tile_length
         width_ray_triangle = divide(division_style, height_ray_triangle * abs_j_ray_direction, abs_i_ray_direction)
+        height_ray_triangle = oftype(width_ray_triangle, height_ray_triangle)
     else
         width_ray_triangle = distance_traveled_along_j_axis_to_exit_ray_start_tile + (j_steps_taken - one(j_steps_taken)) * tile_length
         height_ray_triangle = divide(division_style, width_ray_triangle * abs_i_ray_direction, abs_j_ray_direction)
+        width_ray_triangle = oftype(height_ray_triangle, width_ray_triangle)
     end
 
     x_ray_stop = x_ray_start + sign_i_ray_direction * height_ray_triangle
