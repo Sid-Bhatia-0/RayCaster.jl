@@ -87,10 +87,10 @@ function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, x_ray_
         height_ray_triangle = divide(division_style, width_ray_triangle * abs_i_ray_direction, abs_j_ray_direction)
     end
 
-    i_ray_stop = x_ray_start + sign_i_ray_direction * height_ray_triangle
-    j_ray_stop = y_ray_start + sign_j_ray_direction * width_ray_triangle
+    x_ray_stop = x_ray_start + sign_i_ray_direction * height_ray_triangle
+    y_ray_stop = y_ray_start + sign_j_ray_direction * width_ray_triangle
 
-    return i_ray_stop, j_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension
+    return x_ray_stop, y_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension
 end
 
 end
