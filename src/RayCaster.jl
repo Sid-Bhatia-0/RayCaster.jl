@@ -28,24 +28,24 @@ function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, x_ray_
 
     if i_ray_direction < zero(I)
         i_tile_step_size = -one(I)
-        distance_traveled_along_i_axis_to_exit_ray_start_tile = (x_ray_start - (i_ray_start_tile - one(I)) * tile_length - one(I))
+        distance_traveled_along_i_axis_to_exit_ray_start_tile = x_ray_start - get_tile_start(i_ray_start_tile, tile_length)
         sign_i_ray_direction = -one(I)
         abs_i_ray_direction = -i_ray_direction
     else
         i_tile_step_size = one(I)
-        distance_traveled_along_i_axis_to_exit_ray_start_tile = (i_ray_start_tile * tile_length + one(I)- x_ray_start)
+        distance_traveled_along_i_axis_to_exit_ray_start_tile = get_tile_end(i_ray_start_tile, tile_length) - x_ray_start
         sign_i_ray_direction = one(I)
         abs_i_ray_direction = i_ray_direction
     end
 
     if j_ray_direction < zero(I)
         j_tile_step_size = -one(I)
-        distance_traveled_along_j_axis_to_exit_ray_start_tile = (y_ray_start - (j_ray_start_tile - one(I)) * tile_length - one(I))
+        distance_traveled_along_j_axis_to_exit_ray_start_tile = y_ray_start - get_tile_start(j_ray_start_tile, tile_length)
         sign_j_ray_direction = -one(I)
         abs_j_ray_direction = -j_ray_direction
     else
         j_tile_step_size = one(I)
-        distance_traveled_along_j_axis_to_exit_ray_start_tile = (j_ray_start_tile * tile_length + one(I)- y_ray_start)
+        distance_traveled_along_j_axis_to_exit_ray_start_tile = get_tile_end(j_ray_start_tile, tile_length) - y_ray_start
         sign_j_ray_direction = one(I)
         abs_j_ray_direction = j_ray_direction
     end
