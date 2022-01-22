@@ -382,49 +382,6 @@ Test.@testset "RayCaster.jl" begin
         end
     end
 
-    Test.@testset "is_touching_obstacle" begin
-        obstacle_tile_map = BitArray([
-                                      1 1 1 1 1
-                                      1 0 0 0 1
-                                      1 0 0 0 1
-                                      1 0 0 0 1
-                                      1 1 1 1 1
-                                     ])
-
-        tile_length = 8
-        Test.@test RC.is_touching_obstacle(obstacle_tile_map, tile_length, 1, 1)
-        Test.@test RC.is_touching_obstacle(obstacle_tile_map, tile_length, 41, 1)
-        Test.@test RC.is_touching_obstacle(obstacle_tile_map, tile_length, 1, 41)
-        Test.@test RC.is_touching_obstacle(obstacle_tile_map, tile_length, 41, 41)
-
-        Test.@test RC.is_touching_obstacle(obstacle_tile_map, tile_length, 21, 1)
-        Test.@test RC.is_touching_obstacle(obstacle_tile_map, tile_length, 1, 21)
-        Test.@test RC.is_touching_obstacle(obstacle_tile_map, tile_length, 41, 21)
-        Test.@test RC.is_touching_obstacle(obstacle_tile_map, tile_length, 21, 41)
-
-        Test.@test RC.is_touching_obstacle(obstacle_tile_map, tile_length, 9, 9)
-        Test.@test RC.is_touching_obstacle(obstacle_tile_map, tile_length, 33, 9)
-        Test.@test RC.is_touching_obstacle(obstacle_tile_map, tile_length, 9, 33)
-        Test.@test RC.is_touching_obstacle(obstacle_tile_map, tile_length, 33, 33)
-
-        Test.@test RC.is_touching_obstacle(obstacle_tile_map, tile_length, 21, 9)
-        Test.@test RC.is_touching_obstacle(obstacle_tile_map, tile_length, 9, 21)
-        Test.@test RC.is_touching_obstacle(obstacle_tile_map, tile_length, 33, 21)
-        Test.@test RC.is_touching_obstacle(obstacle_tile_map, tile_length, 21, 33)
-
-        Test.@test !RC.is_touching_obstacle(obstacle_tile_map, tile_length, 17, 17)
-        Test.@test !RC.is_touching_obstacle(obstacle_tile_map, tile_length, 24, 17)
-        Test.@test !RC.is_touching_obstacle(obstacle_tile_map, tile_length, 17, 24)
-        Test.@test !RC.is_touching_obstacle(obstacle_tile_map, tile_length, 24, 24)
-
-        Test.@test !RC.is_touching_obstacle(obstacle_tile_map, tile_length, 21, 17)
-        Test.@test !RC.is_touching_obstacle(obstacle_tile_map, tile_length, 17, 21)
-        Test.@test !RC.is_touching_obstacle(obstacle_tile_map, tile_length, 24, 21)
-        Test.@test !RC.is_touching_obstacle(obstacle_tile_map, tile_length, 21, 24)
-
-        Test.@test !RC.is_touching_obstacle(obstacle_tile_map, tile_length, 21, 21)
-    end
-
     Test.@testset "cast_ray_1d" begin
         obstacle_tile_map = BitArray([1, 0, 0, 0, 1])
         max_steps = 1024

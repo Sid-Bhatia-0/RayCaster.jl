@@ -11,88 +11,6 @@ const RATIONAL_DIVISION = RationalDivision()
 divide(::FloatDivision, x, y) = x / y
 divide(::RationalDivision, x, y) = x // y
 
-function is_touching_obstacle(obstacle_tile_map::AbstractArray{Bool, 1}, tile_length, x)
-    i_tile = fld1(x, tile_length)
-
-    I = typeof(i_tile)
-
-    x_tile_start = get_tile_start(i_tile, tile_length)
-    x_tile_end = get_tile_end(i_tile, tile_length)
-
-    i_tile_before = i_tile - one(I)
-    i_tile_after = i_tile + one(I)
-
-    is_obstacle_present_1 = checkbounds(Bool, obstacle_tile_map, i_tile_before) && obstacle_tile_map[i_tile_before]
-    is_obstacle_present_2 = checkbounds(Bool, obstacle_tile_map, i_tile) && obstacle_tile_map[i_tile]
-    is_obstacle_present_3 = checkbounds(Bool, obstacle_tile_map, i_tile_after) && obstacle_tile_map[i_tile_after]
-
-    if x == x_tile_start
-        return is_obstacle_present_1 || is_obstacle_present_2
-    elseif x == x_tile_end
-        return is_obstacle_present_2 || is_obstacle_present_3
-    else
-        return is_obstacle_present_2
-    end
-end
-
-function is_touching_obstacle(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, x, y)
-    i_tile = fld1(x, tile_length)
-    j_tile = fld1(y, tile_length)
-
-    I = typeof(i_tile)
-
-    x_tile_start = get_tile_start(i_tile, tile_length)
-    y_tile_start = get_tile_start(j_tile, tile_length)
-
-    x_tile_end = get_tile_end(i_tile, tile_length)
-    y_tile_end = get_tile_end(j_tile, tile_length)
-
-    i_tile_before = i_tile - one(I)
-    j_tile_before = j_tile - one(I)
-
-    i_tile_after = i_tile + one(I)
-    j_tile_after = j_tile + one(I)
-
-    # 1 4 7
-    # 2 5 8
-    # 3 6 9
-    is_obstacle_present_1 = checkbounds(Bool, obstacle_tile_map, i_tile_before, j_tile_before) && obstacle_tile_map[i_tile_before, j_tile_before]
-    is_obstacle_present_2 = checkbounds(Bool, obstacle_tile_map, i_tile, j_tile_before) && obstacle_tile_map[i_tile, j_tile_before]
-    is_obstacle_present_3 = checkbounds(Bool, obstacle_tile_map, i_tile_after, j_tile_before) && obstacle_tile_map[i_tile_after, j_tile_before]
-    is_obstacle_present_4 = checkbounds(Bool, obstacle_tile_map, i_tile_before, j_tile) && obstacle_tile_map[i_tile_before, j_tile]
-    is_obstacle_present_5 = checkbounds(Bool, obstacle_tile_map, i_tile, j_tile) && obstacle_tile_map[i_tile, j_tile]
-    is_obstacle_present_6 = checkbounds(Bool, obstacle_tile_map, i_tile_after, j_tile) && obstacle_tile_map[i_tile_after, j_tile]
-    is_obstacle_present_7 = checkbounds(Bool, obstacle_tile_map, i_tile_before, j_tile_after) && obstacle_tile_map[i_tile_before, j_tile_after]
-    is_obstacle_present_8 = checkbounds(Bool, obstacle_tile_map, i_tile, j_tile_after) && obstacle_tile_map[i_tile, j_tile_after]
-    is_obstacle_present_9 = checkbounds(Bool, obstacle_tile_map, i_tile_after, j_tile_after) && obstacle_tile_map[i_tile_after, j_tile_after]
-
-    if x == x_tile_start
-        if y == y_tile_start
-            return is_obstacle_present_1 || is_obstacle_present_2 || is_obstacle_present_4 || is_obstacle_present_5
-        elseif y == y_tile_end
-            return is_obstacle_present_4 || is_obstacle_present_5 || is_obstacle_present_7 || is_obstacle_present_8
-        else
-            return is_obstacle_present_4 || is_obstacle_present_5
-        end
-    elseif x == x_tile_end
-        if y == y_tile_start
-            return is_obstacle_present_2 || is_obstacle_present_3 || is_obstacle_present_5 || is_obstacle_present_6
-        elseif y == y_tile_end
-            return is_obstacle_present_5 || is_obstacle_present_6 || is_obstacle_present_8 || is_obstacle_present_9
-        else
-            return is_obstacle_present_5 || is_obstacle_present_6
-        end
-    else
-        if y == y_tile_start
-            return is_obstacle_present_2 || is_obstacle_present_5
-        elseif y == y_tile_end
-            return is_obstacle_present_5 || is_obstacle_present_8
-        else
-            return is_obstacle_present_5
-        end
-    end
-end
-
 function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style::AbstractDivisionStyle)
     @assert !(iszero(i_ray_direction) && iszero(j_ray_direction))
 
@@ -107,7 +25,7 @@ get_tile_end(i, tile_length) = i * tile_length + one(tile_length)
 
 function cast_ray(obstacle_tile_map::AbstractArray{Bool, 1}, tile_length, x_ray_start, i_ray_start_tile, i_ray_direction, max_steps)
     @assert !iszero(i_ray_direction)
-    @assert !is_touching_obstacle(obstacle_tile_map, tile_length, x_ray_start)
+    @assert !obstacle_tile_map[i_ray_start_tile]
 
     I = typeof(x_ray_start)
 
@@ -138,11 +56,11 @@ function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, x_ray_
     iszero_j_ray_direction = iszero(j_ray_direction)
 
     @assert !(iszero_i_ray_direction && iszero_j_ray_direction)
-    @assert !is_touching_obstacle(obstacle_tile_map, tile_length, x_ray_start, y_ray_start)
-    @assert !(i_ray_start_tile == firstindex(obstacle_tile_map, 1))
-    @assert !(j_ray_start_tile == firstindex(obstacle_tile_map, 2))
-    @assert !(i_ray_start_tile == lastindex(obstacle_tile_map, 1))
-    @assert !(j_ray_start_tile == lastindex(obstacle_tile_map, 2))
+    @assert !obstacle_tile_map[i_ray_start_tile, j_ray_start_tile]
+    @assert !(x_ray_start == get_tile_start(firstindex(obstacle_tile_map, 1), tile_length))
+    @assert !(y_ray_start == get_tile_start(firstindex(obstacle_tile_map, 2), tile_length))
+    @assert !(x_ray_start == get_tile_end(lastindex(obstacle_tile_map, 1), tile_length))
+    @assert !(y_ray_start == get_tile_end(lastindex(obstacle_tile_map, 2), tile_length))
 
     I = typeof(x_ray_start)
 
