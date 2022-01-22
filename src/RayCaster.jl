@@ -11,10 +11,10 @@ const RATIONAL_DIVISION = RationalDivision()
 divide(::FloatDivision, x, y) = x / y
 divide(::RationalDivision, x, y) = x // y
 
-cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style::AbstractDivisionStyle) = cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, fld1(x_ray_start, tile_length), fld1(y_ray_start, tile_length), i_ray_direction, j_ray_direction, max_steps, division_style)
-
 get_tile_start(i, tile_length) = (i - one(i)) * tile_length + one(tile_length)
 get_tile_end(i, tile_length) = i * tile_length + one(tile_length)
+
+cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style::AbstractDivisionStyle) = cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, fld1(x_ray_start, tile_length), fld1(y_ray_start, tile_length), i_ray_direction, j_ray_direction, max_steps, division_style)
 
 function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, x_ray_start, y_ray_start, i_ray_start_tile, j_ray_start_tile, i_ray_direction, j_ray_direction, max_steps, division_style::AbstractDivisionStyle)
     @assert !(iszero(i_ray_direction) && iszero(j_ray_direction))
