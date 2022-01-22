@@ -1,5 +1,16 @@
 module RayCaster
 
+abstract type AbstractDivisionStyle end
+
+struct FloatDivision <: AbstractDivisionStyle end
+const FLOAT_DIVISION = FloatDivision()
+
+struct RationalDivision <: AbstractDivisionStyle end
+const RATIONAL_DIVISION = RationalDivision()
+
+divide(::FloatDivision, x, y) = x / y
+divide(::RationalDivision, x, y) = x // y
+
 function is_touching_obstacle(obstacle_tile_map::AbstractArray{Bool, 1}, tile_length, x)
     i_tile = fld1(x, tile_length)
 
@@ -82,13 +93,13 @@ function is_touching_obstacle(obstacle_tile_map::AbstractArray{Bool, 2}, tile_le
     end
 end
 
-function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps)
+function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style::AbstractDivisionStyle)
     @assert !(iszero(i_ray_direction) && iszero(j_ray_direction))
 
     i_ray_start_tile = fld1(x_ray_start, tile_length)
     j_ray_start_tile = fld1(y_ray_start, tile_length)
 
-    return cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, i_ray_start_tile, j_ray_start_tile, i_ray_direction, j_ray_direction, max_steps)
+    return cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, i_ray_start_tile, j_ray_start_tile, i_ray_direction, j_ray_direction, max_steps, division_style)
 end
 
 get_tile_start(i, tile_length) = (i - one(i)) * tile_length + one(tile_length)
@@ -122,7 +133,7 @@ function cast_ray(obstacle_tile_map::AbstractArray{Bool, 1}, tile_length, x_ray_
     return i_ray_stop, i_ray_hit_tile
 end
 
-function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, x_ray_start, y_ray_start, i_ray_start_tile, j_ray_start_tile, i_ray_direction, j_ray_direction, max_steps)
+function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, x_ray_start, y_ray_start, i_ray_start_tile, j_ray_start_tile, i_ray_direction, j_ray_direction, max_steps, division_style::AbstractDivisionStyle)
     iszero_i_ray_direction = iszero(i_ray_direction)
     iszero_j_ray_direction = iszero(j_ray_direction)
 
@@ -151,7 +162,11 @@ function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, x_ray_
         i_ray_stop = x_ray_start
         i_ray_hit_tile = i_ray_start_tile
         hit_dimension = 2
-        return convert(Rational, i_ray_stop), convert(Rational, j_ray_stop), i_ray_hit_tile, j_ray_hit_tile, hit_dimension
+
+        i_ray_stop = divide(division_style, i_ray_stop, one(i_ray_stop))
+        j_ray_stop = divide(division_style, j_ray_stop, one(j_ray_stop))
+
+        return i_ray_stop, j_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension
     end
 
     if j_ray_direction < zero(I)
@@ -170,7 +185,11 @@ function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, x_ray_
         j_ray_stop = y_ray_start
         j_ray_hit_tile = j_ray_start_tile
         hit_dimension = 1
-        return convert(Rational, i_ray_stop), convert(Rational, j_ray_stop), i_ray_hit_tile, j_ray_hit_tile, hit_dimension
+
+        i_ray_stop = divide(division_style, i_ray_stop, one(i_ray_stop))
+        j_ray_stop = divide(division_style, j_ray_stop, one(j_ray_stop))
+
+        return i_ray_stop, j_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension
     end
 
     height_ray_direction_triangle = abs_i_ray_direction + one(I)
@@ -203,17 +222,16 @@ function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, x_ray_
 
     if hit_dimension == 1
         height_ray_triangle = cells_travelled_along_i_axis_to_exit_ray_start_tile + (i_steps_taken - one(I)) * tile_length
-        width_ray_triangle = (height_ray_triangle * abs_j_ray_direction) // abs_i_ray_direction
-        i_ray_stop = x_ray_start + sign_i_ray_direction * height_ray_triangle
-        j_ray_stop = y_ray_start + sign_j_ray_direction * width_ray_triangle
+        width_ray_triangle = divide(division_style, height_ray_triangle * abs_j_ray_direction, abs_i_ray_direction)
     else
         width_ray_triangle = cells_travelled_along_j_axis_to_exit_ray_start_tile + (j_steps_taken - one(I)) * tile_length
-        height_ray_triangle = (width_ray_triangle * abs_i_ray_direction) // abs_j_ray_direction
-        j_ray_stop = y_ray_start + sign_j_ray_direction * width_ray_triangle
-        i_ray_stop = x_ray_start + sign_i_ray_direction * height_ray_triangle
+        height_ray_triangle = divide(division_style, width_ray_triangle * abs_i_ray_direction, abs_j_ray_direction)
     end
 
-    return convert(Rational, i_ray_stop), convert(Rational, j_ray_stop), i_ray_hit_tile, j_ray_hit_tile, hit_dimension
+    i_ray_stop = x_ray_start + sign_i_ray_direction * height_ray_triangle
+    j_ray_stop = y_ray_start + sign_j_ray_direction * width_ray_triangle
+
+    return i_ray_stop, j_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension
 end
 
 end
