@@ -24,29 +24,27 @@ function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, x_ray_
     @assert !(x_ray_start == get_tile_end(lastindex(obstacle_tile_map, 1), tile_length))
     @assert !(y_ray_start == get_tile_end(lastindex(obstacle_tile_map, 2), tile_length))
 
-    I = typeof(x_ray_start)
-
-    if i_ray_direction < zero(I)
-        i_tile_step_size = -one(I)
+    if i_ray_direction < zero(i_ray_direction)
+        i_tile_step_size = -one(i_ray_start_tile)
         distance_traveled_along_i_axis_to_exit_ray_start_tile = x_ray_start - get_tile_start(i_ray_start_tile, tile_length)
-        sign_i_ray_direction = -one(I)
+        sign_i_ray_direction = -one(x_ray_start)
         abs_i_ray_direction = -i_ray_direction
     else
-        i_tile_step_size = one(I)
+        i_tile_step_size = one(i_ray_start_tile)
         distance_traveled_along_i_axis_to_exit_ray_start_tile = get_tile_end(i_ray_start_tile, tile_length) - x_ray_start
-        sign_i_ray_direction = one(I)
+        sign_i_ray_direction = one(x_ray_start)
         abs_i_ray_direction = i_ray_direction
     end
 
-    if j_ray_direction < zero(I)
-        j_tile_step_size = -one(I)
+    if j_ray_direction < zero(j_ray_direction)
+        j_tile_step_size = -one(j_ray_start_tile)
         distance_traveled_along_j_axis_to_exit_ray_start_tile = y_ray_start - get_tile_start(j_ray_start_tile, tile_length)
-        sign_j_ray_direction = -one(I)
+        sign_j_ray_direction = -one(y_ray_start)
         abs_j_ray_direction = -j_ray_direction
     else
-        j_tile_step_size = one(I)
+        j_tile_step_size = one(j_ray_start_tile)
         distance_traveled_along_j_axis_to_exit_ray_start_tile = get_tile_end(j_ray_start_tile, tile_length) - y_ray_start
-        sign_j_ray_direction = one(I)
+        sign_j_ray_direction = one(y_ray_start)
         abs_j_ray_direction = j_ray_direction
     end
 
@@ -59,29 +57,31 @@ function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, x_ray_
     i_ray_hit_tile = i_ray_start_tile
     j_ray_hit_tile = j_ray_start_tile
     hit_dimension = 0
-    i_steps_taken = zero(I)
-    j_steps_taken = zero(I)
+    i_steps_taken = zero(max_steps)
+    j_steps_taken = zero(max_steps)
 
     while !obstacle_tile_map[i_ray_hit_tile, j_ray_hit_tile] && i_steps_taken < max_steps && j_steps_taken < max_steps
         if (scaled_ray_length_when_traveling_along_i_axis <= scaled_ray_length_when_traveling_along_j_axis)
             scaled_ray_length_when_traveling_along_i_axis += scaled_increase_in_ray_length_per_tile_traveled_along_i_axis
             i_ray_hit_tile += i_tile_step_size
             hit_dimension = 1
-            i_steps_taken += one(I)
+            i_steps_taken += one(i_steps_taken)
         else
             scaled_ray_length_when_traveling_along_j_axis += scaled_increase_in_ray_length_per_tile_traveled_along_j_axis
             j_ray_hit_tile += j_tile_step_size
             hit_dimension = 2
-            j_steps_taken += one(I)
+            j_steps_taken += one(j_steps_taken)
         end
     end
 
     if hit_dimension == 1
-        height_ray_triangle = distance_traveled_along_i_axis_to_exit_ray_start_tile + (i_steps_taken - one(I)) * tile_length
+        height_ray_triangle = distance_traveled_along_i_axis_to_exit_ray_start_tile + (i_steps_taken - one(i_steps_taken)) * tile_length
         width_ray_triangle = divide(division_style, height_ray_triangle * abs_j_ray_direction, abs_i_ray_direction)
+        height_ray_triangle = oftype(width_ray_triangle, height_ray_triangle)
     else
-        width_ray_triangle = distance_traveled_along_j_axis_to_exit_ray_start_tile + (j_steps_taken - one(I)) * tile_length
+        width_ray_triangle = distance_traveled_along_j_axis_to_exit_ray_start_tile + (j_steps_taken - one(j_steps_taken)) * tile_length
         height_ray_triangle = divide(division_style, width_ray_triangle * abs_i_ray_direction, abs_j_ray_direction)
+        width_ray_triangle = oftype(height_ray_triangle, width_ray_triangle)
     end
 
     x_ray_stop = x_ray_start + sign_i_ray_direction * height_ray_triangle
