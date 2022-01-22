@@ -17,10 +17,7 @@ get_tile_start(i, tile_length) = (i - one(i)) * tile_length + one(tile_length)
 get_tile_end(i, tile_length) = i * tile_length + one(tile_length)
 
 function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, x_ray_start, y_ray_start, i_ray_start_tile, j_ray_start_tile, i_ray_direction, j_ray_direction, max_steps, division_style::AbstractDivisionStyle)
-    iszero_i_ray_direction = iszero(i_ray_direction)
-    iszero_j_ray_direction = iszero(j_ray_direction)
-
-    @assert !(iszero_i_ray_direction && iszero_j_ray_direction)
+    @assert !(iszero(i_ray_direction) && iszero(j_ray_direction))
     @assert !obstacle_tile_map[i_ray_start_tile, j_ray_start_tile]
     @assert !(x_ray_start == get_tile_start(firstindex(obstacle_tile_map, 1), tile_length))
     @assert !(y_ray_start == get_tile_start(firstindex(obstacle_tile_map, 2), tile_length))
