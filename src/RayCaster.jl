@@ -103,8 +103,6 @@ function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, x_ray_
         return i_ray_stop, j_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension
     end
 
-    height_ray_direction_triangle = abs_i_ray_direction + one(I)
-    width_ray_direction_triangle = abs_j_ray_direction + one(I)
     scaled_increase_in_ray_length_per_tile_travelled_along_i_axis = tile_length * abs_j_ray_direction
     scaled_increase_in_ray_length_per_tile_travelled_along_j_axis = tile_length * abs_i_ray_direction
 
