@@ -28,33 +28,33 @@ function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, x_ray_
 
     if i_ray_direction < zero(I)
         i_tile_step_size = -one(I)
-        cells_travelled_along_i_axis_to_exit_ray_start_tile = (x_ray_start - (i_ray_start_tile - one(I)) * tile_length - one(I))
+        distance_traveled_along_i_axis_to_exit_ray_start_tile = x_ray_start - get_tile_start(i_ray_start_tile, tile_length)
         sign_i_ray_direction = -one(I)
         abs_i_ray_direction = -i_ray_direction
     else
         i_tile_step_size = one(I)
-        cells_travelled_along_i_axis_to_exit_ray_start_tile = (i_ray_start_tile * tile_length + one(I)- x_ray_start)
+        distance_traveled_along_i_axis_to_exit_ray_start_tile = get_tile_end(i_ray_start_tile, tile_length) - x_ray_start
         sign_i_ray_direction = one(I)
         abs_i_ray_direction = i_ray_direction
     end
 
     if j_ray_direction < zero(I)
         j_tile_step_size = -one(I)
-        cells_travelled_along_j_axis_to_exit_ray_start_tile = (y_ray_start - (j_ray_start_tile - one(I)) * tile_length - one(I))
+        distance_traveled_along_j_axis_to_exit_ray_start_tile = y_ray_start - get_tile_start(j_ray_start_tile, tile_length)
         sign_j_ray_direction = -one(I)
         abs_j_ray_direction = -j_ray_direction
     else
         j_tile_step_size = one(I)
-        cells_travelled_along_j_axis_to_exit_ray_start_tile = (j_ray_start_tile * tile_length + one(I)- y_ray_start)
+        distance_traveled_along_j_axis_to_exit_ray_start_tile = get_tile_end(j_ray_start_tile, tile_length) - y_ray_start
         sign_j_ray_direction = one(I)
         abs_j_ray_direction = j_ray_direction
     end
 
-    scaled_increase_in_ray_length_per_tile_travelled_along_i_axis = tile_length * abs_j_ray_direction
-    scaled_increase_in_ray_length_per_tile_travelled_along_j_axis = tile_length * abs_i_ray_direction
+    scaled_increase_in_ray_length_per_tile_traveled_along_i_axis = tile_length * abs_j_ray_direction
+    scaled_increase_in_ray_length_per_tile_traveled_along_j_axis = tile_length * abs_i_ray_direction
 
-    scaled_ray_length_when_traveling_along_i_axis = cells_travelled_along_i_axis_to_exit_ray_start_tile * abs_j_ray_direction
-    scaled_ray_length_when_traveling_along_j_axis = cells_travelled_along_j_axis_to_exit_ray_start_tile * abs_i_ray_direction
+    scaled_ray_length_when_traveling_along_i_axis = distance_traveled_along_i_axis_to_exit_ray_start_tile * abs_j_ray_direction
+    scaled_ray_length_when_traveling_along_j_axis = distance_traveled_along_j_axis_to_exit_ray_start_tile * abs_i_ray_direction
 
     i_ray_hit_tile = i_ray_start_tile
     j_ray_hit_tile = j_ray_start_tile
@@ -64,12 +64,12 @@ function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, x_ray_
 
     while !obstacle_tile_map[i_ray_hit_tile, j_ray_hit_tile] && i_steps_taken < max_steps && j_steps_taken < max_steps
         if (scaled_ray_length_when_traveling_along_i_axis <= scaled_ray_length_when_traveling_along_j_axis)
-            scaled_ray_length_when_traveling_along_i_axis += scaled_increase_in_ray_length_per_tile_travelled_along_i_axis
+            scaled_ray_length_when_traveling_along_i_axis += scaled_increase_in_ray_length_per_tile_traveled_along_i_axis
             i_ray_hit_tile += i_tile_step_size
             hit_dimension = 1
             i_steps_taken += one(I)
         else
-            scaled_ray_length_when_traveling_along_j_axis += scaled_increase_in_ray_length_per_tile_travelled_along_j_axis
+            scaled_ray_length_when_traveling_along_j_axis += scaled_increase_in_ray_length_per_tile_traveled_along_j_axis
             j_ray_hit_tile += j_tile_step_size
             hit_dimension = 2
             j_steps_taken += one(I)
@@ -77,10 +77,10 @@ function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, x_ray_
     end
 
     if hit_dimension == 1
-        height_ray_triangle = cells_travelled_along_i_axis_to_exit_ray_start_tile + (i_steps_taken - one(I)) * tile_length
+        height_ray_triangle = distance_traveled_along_i_axis_to_exit_ray_start_tile + (i_steps_taken - one(I)) * tile_length
         width_ray_triangle = divide(division_style, height_ray_triangle * abs_j_ray_direction, abs_i_ray_direction)
     else
-        width_ray_triangle = cells_travelled_along_j_axis_to_exit_ray_start_tile + (j_steps_taken - one(I)) * tile_length
+        width_ray_triangle = distance_traveled_along_j_axis_to_exit_ray_start_tile + (j_steps_taken - one(I)) * tile_length
         height_ray_triangle = divide(division_style, width_ray_triangle * abs_i_ray_direction, abs_j_ray_direction)
     end
 
