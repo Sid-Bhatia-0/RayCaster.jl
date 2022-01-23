@@ -1,6 +1,9 @@
 import RayCaster as RC
 import Test
 
+test_ray_stop(division_style::RC.RationalDivision, x_ray_stop_computed, x_ray_stop_actual) = x_ray_stop_computed == convert(Rational, x_ray_stop_actual)
+test_ray_stop(division_style::RC.FloatDivision, x_ray_stop_computed, x_ray_stop_actual) = x_ray_stop_computed ≈ convert(Float64, x_ray_stop_actual)
+
 Test.@testset "RayCaster.jl" begin
     obstacle_tile_map = BitArray([
                                   1 1 1 1 1
@@ -11,9 +14,8 @@ Test.@testset "RayCaster.jl" begin
                                  ])
 
     max_steps = 1024
-    division_style = RC.RATIONAL_DIVISION
     I = Int
-    Test.@testset "I = $(I), max_steps = $(max_steps), division_style = $(division_style)" begin
+    Test.@testset "I = $(I), max_steps = $(max_steps), division_style = $(division_style)" for division_style in [RC.RATIONAL_DIVISION, RC.FLOAT_DIVISION]
 
         tile_length = convert(I, 8)
         Test.@testset "tile_length = $(tile_length)" begin
@@ -32,8 +34,8 @@ Test.@testset "RayCaster.jl" begin
                     j_ray_direction = convert(I, 0)
                     Test.@testset "i_ray_direction = $(i_ray_direction), j_ray_direction = $(j_ray_direction)" begin
                         x_ray_stop, y_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style)
-                        Test.@test x_ray_stop == convert(Rational, 33)
-                        Test.@test y_ray_stop == convert(Rational, 9)
+                        Test.@test test_ray_stop(division_style, x_ray_stop, 33)
+                        Test.@test test_ray_stop(division_style, y_ray_stop, 9)
                         Test.@test i_ray_hit_tile == convert(I, 5)
                         Test.@test j_ray_hit_tile == convert(I, 2)
                         Test.@test hit_dimension == 1
@@ -43,8 +45,8 @@ Test.@testset "RayCaster.jl" begin
                     j_ray_direction = convert(I, 1)
                     Test.@testset "i_ray_direction = $(i_ray_direction), j_ray_direction = $(j_ray_direction)" begin
                         x_ray_stop, y_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style)
-                        Test.@test x_ray_stop == convert(Rational, 17)
-                        Test.@test y_ray_stop == convert(Rational, 17)
+                        Test.@test test_ray_stop(division_style, x_ray_stop, 17)
+                        Test.@test test_ray_stop(division_style, y_ray_stop, 17)
                         Test.@test i_ray_hit_tile == convert(I, 3)
                         Test.@test j_ray_hit_tile == convert(I, 3)
                         Test.@test hit_dimension == 2
@@ -54,8 +56,8 @@ Test.@testset "RayCaster.jl" begin
                     j_ray_direction = convert(I, 1)
                     Test.@testset "i_ray_direction = $(i_ray_direction), j_ray_direction = $(j_ray_direction)" begin
                         x_ray_stop, y_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style)
-                        Test.@test x_ray_stop == convert(Rational, 9)
-                        Test.@test y_ray_stop == convert(Rational, 33)
+                        Test.@test test_ray_stop(division_style, x_ray_stop, 9)
+                        Test.@test test_ray_stop(division_style, y_ray_stop, 33)
                         Test.@test i_ray_hit_tile == convert(I, 2)
                         Test.@test j_ray_hit_tile == convert(I, 5)
                         Test.@test hit_dimension == 2
@@ -65,8 +67,8 @@ Test.@testset "RayCaster.jl" begin
                     j_ray_direction = convert(I, 1)
                     Test.@testset "i_ray_direction = $(i_ray_direction), j_ray_direction = $(j_ray_direction)" begin
                         x_ray_stop, y_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style)
-                        Test.@test x_ray_stop == convert(Rational, 9)
-                        Test.@test y_ray_stop == convert(Rational, 9)
+                        Test.@test test_ray_stop(division_style, x_ray_stop, 9)
+                        Test.@test test_ray_stop(division_style, y_ray_stop, 9)
                         Test.@test i_ray_hit_tile == convert(I, 1)
                         Test.@test j_ray_hit_tile == convert(I, 2)
                         Test.@test hit_dimension == 1
@@ -76,8 +78,8 @@ Test.@testset "RayCaster.jl" begin
                     j_ray_direction = convert(I, 0)
                     Test.@testset "i_ray_direction = $(i_ray_direction), j_ray_direction = $(j_ray_direction)" begin
                         x_ray_stop, y_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style)
-                        Test.@test x_ray_stop == convert(Rational, 9)
-                        Test.@test y_ray_stop == convert(Rational, 9)
+                        Test.@test test_ray_stop(division_style, x_ray_stop, 9)
+                        Test.@test test_ray_stop(division_style, y_ray_stop, 9)
                         Test.@test i_ray_hit_tile == convert(I, 1)
                         Test.@test j_ray_hit_tile == convert(I, 2)
                         Test.@test hit_dimension == 1
@@ -87,8 +89,8 @@ Test.@testset "RayCaster.jl" begin
                     j_ray_direction = convert(I, -1)
                     Test.@testset "i_ray_direction = $(i_ray_direction), j_ray_direction = $(j_ray_direction)" begin
                         x_ray_stop, y_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style)
-                        Test.@test x_ray_stop == convert(Rational, 9)
-                        Test.@test y_ray_stop == convert(Rational, 9)
+                        Test.@test test_ray_stop(division_style, x_ray_stop, 9)
+                        Test.@test test_ray_stop(division_style, y_ray_stop, 9)
                         Test.@test i_ray_hit_tile == convert(I, 1)
                         Test.@test j_ray_hit_tile == convert(I, 2)
                         Test.@test hit_dimension == 1
@@ -98,8 +100,8 @@ Test.@testset "RayCaster.jl" begin
                     j_ray_direction = convert(I, -1)
                     Test.@testset "i_ray_direction = $(i_ray_direction), j_ray_direction = $(j_ray_direction)" begin
                         x_ray_stop, y_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style)
-                        Test.@test x_ray_stop == convert(Rational, 9)
-                        Test.@test y_ray_stop == convert(Rational, 9)
+                        Test.@test test_ray_stop(division_style, x_ray_stop, 9)
+                        Test.@test test_ray_stop(division_style, y_ray_stop, 9)
                         Test.@test i_ray_hit_tile == convert(I, 2)
                         Test.@test j_ray_hit_tile == convert(I, 1)
                         Test.@test hit_dimension == 2
@@ -109,8 +111,8 @@ Test.@testset "RayCaster.jl" begin
                     j_ray_direction = convert(I, -1)
                     Test.@testset "i_ray_direction = $(i_ray_direction), j_ray_direction = $(j_ray_direction)" begin
                         x_ray_stop, y_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style)
-                        Test.@test x_ray_stop == convert(Rational, 9)
-                        Test.@test y_ray_stop == convert(Rational, 9)
+                        Test.@test test_ray_stop(division_style, x_ray_stop, 9)
+                        Test.@test test_ray_stop(division_style, y_ray_stop, 9)
                         Test.@test i_ray_hit_tile == convert(I, 2)
                         Test.@test j_ray_hit_tile == convert(I, 1)
                         Test.@test hit_dimension == 2
@@ -127,8 +129,8 @@ Test.@testset "RayCaster.jl" begin
                     j_ray_direction = convert(I, 1)
                     Test.@testset "i_ray_direction = $(i_ray_direction), j_ray_direction = $(j_ray_direction)" begin
                         x_ray_stop, y_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style)
-                        Test.@test x_ray_stop == convert(Rational, 17)
-                        Test.@test y_ray_stop == convert(Rational, 17)
+                        Test.@test test_ray_stop(division_style, x_ray_stop, 17)
+                        Test.@test test_ray_stop(division_style, y_ray_stop, 17)
                         Test.@test i_ray_hit_tile == convert(I, 3)
                         Test.@test j_ray_hit_tile == convert(I, 3)
                         Test.@test hit_dimension == 2
@@ -145,8 +147,8 @@ Test.@testset "RayCaster.jl" begin
                     j_ray_direction = convert(I, 0)
                     Test.@testset "i_ray_direction = $(i_ray_direction), j_ray_direction = $(j_ray_direction)" begin
                         x_ray_stop, y_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style)
-                        Test.@test x_ray_stop == convert(Rational, 17)
-                        Test.@test y_ray_stop == convert(Rational, 17)
+                        Test.@test test_ray_stop(division_style, x_ray_stop, 17)
+                        Test.@test test_ray_stop(division_style, y_ray_stop, 17)
                         Test.@test i_ray_hit_tile == convert(I, 3)
                         Test.@test j_ray_hit_tile == convert(I, 3)
                         Test.@test hit_dimension == 1
@@ -168,8 +170,19 @@ Test.@testset "RayCaster.jl" begin
                     j_ray_direction = convert(I, 0)
                     Test.@testset "i_ray_direction = $(i_ray_direction), j_ray_direction = $(j_ray_direction)" begin
                         x_ray_stop, y_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style)
-                        Test.@test x_ray_stop == convert(Rational, 33)
-                        Test.@test y_ray_stop == convert(Rational, 25)
+                        Test.@test test_ray_stop(division_style, x_ray_stop, 33)
+                        Test.@test test_ray_stop(division_style, y_ray_stop, 25)
+                        Test.@test i_ray_hit_tile == convert(I, 5)
+                        Test.@test j_ray_hit_tile == convert(I, 4)
+                        Test.@test hit_dimension == 1
+                    end
+
+                    i_ray_direction = convert(I, 3)
+                    j_ray_direction = convert(I, 1)
+                    Test.@testset "i_ray_direction = $(i_ray_direction), j_ray_direction = $(j_ray_direction)" begin
+                        x_ray_stop, y_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style)
+                        Test.@test test_ray_stop(division_style, x_ray_stop, 33)
+                        Test.@test test_ray_stop(division_style, y_ray_stop, 83//3)
                         Test.@test i_ray_hit_tile == convert(I, 5)
                         Test.@test j_ray_hit_tile == convert(I, 4)
                         Test.@test hit_dimension == 1
@@ -179,20 +192,42 @@ Test.@testset "RayCaster.jl" begin
                     j_ray_direction = convert(I, 1)
                     Test.@testset "i_ray_direction = $(i_ray_direction), j_ray_direction = $(j_ray_direction)" begin
                         x_ray_stop, y_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style)
-                        Test.@test x_ray_stop == convert(Rational, 33)
-                        Test.@test y_ray_stop == convert(Rational, 33)
+                        Test.@test test_ray_stop(division_style, x_ray_stop, 33)
+                        Test.@test test_ray_stop(division_style, y_ray_stop, 33)
                         Test.@test i_ray_hit_tile == convert(I, 5)
                         Test.@test j_ray_hit_tile == convert(I, 4)
                         Test.@test hit_dimension == 1
+                    end
+
+                    i_ray_direction = convert(I, 1)
+                    j_ray_direction = convert(I, 3)
+                    Test.@testset "i_ray_direction = $(i_ray_direction), j_ray_direction = $(j_ray_direction)" begin
+                        x_ray_stop, y_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style)
+                        Test.@test test_ray_stop(division_style, x_ray_stop, 83//3)
+                        Test.@test test_ray_stop(division_style, y_ray_stop, 33)
+                        Test.@test i_ray_hit_tile == convert(I, 4)
+                        Test.@test j_ray_hit_tile == convert(I, 5)
+                        Test.@test hit_dimension == 2
                     end
 
                     i_ray_direction = convert(I, 0)
                     j_ray_direction = convert(I, 1)
                     Test.@testset "i_ray_direction = $(i_ray_direction), j_ray_direction = $(j_ray_direction)" begin
                         x_ray_stop, y_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style)
-                        Test.@test x_ray_stop == convert(Rational, 25)
-                        Test.@test y_ray_stop == convert(Rational, 33)
+                        Test.@test test_ray_stop(division_style, x_ray_stop, 25)
+                        Test.@test test_ray_stop(division_style, y_ray_stop, 33)
                         Test.@test i_ray_hit_tile == convert(I, 4)
+                        Test.@test j_ray_hit_tile == convert(I, 5)
+                        Test.@test hit_dimension == 2
+                    end
+
+                    i_ray_direction = convert(I, -1)
+                    j_ray_direction = convert(I, 3)
+                    Test.@testset "i_ray_direction = $(i_ray_direction), j_ray_direction = $(j_ray_direction)" begin
+                        x_ray_stop, y_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style)
+                        Test.@test test_ray_stop(division_style, x_ray_stop, 67//3)
+                        Test.@test test_ray_stop(division_style, y_ray_stop, 33)
+                        Test.@test i_ray_hit_tile == convert(I, 3)
                         Test.@test j_ray_hit_tile == convert(I, 5)
                         Test.@test hit_dimension == 2
                     end
@@ -201,30 +236,63 @@ Test.@testset "RayCaster.jl" begin
                     j_ray_direction = convert(I, 1)
                     Test.@testset "i_ray_direction = $(i_ray_direction), j_ray_direction = $(j_ray_direction)" begin
                         x_ray_stop, y_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style)
-                        Test.@test x_ray_stop == convert(Rational, 17)
-                        Test.@test y_ray_stop == convert(Rational, 33)
+                        Test.@test test_ray_stop(division_style, x_ray_stop, 17)
+                        Test.@test test_ray_stop(division_style, y_ray_stop, 33)
                         Test.@test i_ray_hit_tile == convert(I, 2)
                         Test.@test j_ray_hit_tile == convert(I, 5)
                         Test.@test hit_dimension == 2
                     end
 
-                    i_ray_direction = convert(I, -1)
-                    j_ray_direction = convert(I, 0)
+                    i_ray_direction = convert(I, -3)
+                    j_ray_direction = convert(I, 1)
                     Test.@testset "i_ray_direction = $(i_ray_direction), j_ray_direction = $(j_ray_direction)" begin
                         x_ray_stop, y_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style)
-                        Test.@test x_ray_stop == convert(Rational, 9)
-                        Test.@test y_ray_stop == convert(Rational, 25)
+                        Test.@test test_ray_stop(division_style, x_ray_stop, 9)
+                        Test.@test test_ray_stop(division_style, y_ray_stop, 91//3)
                         Test.@test i_ray_hit_tile == convert(I, 1)
                         Test.@test j_ray_hit_tile == convert(I, 4)
                         Test.@test hit_dimension == 1
                     end
 
                     i_ray_direction = convert(I, -1)
+                    j_ray_direction = convert(I, 0)
+                    Test.@testset "i_ray_direction = $(i_ray_direction), j_ray_direction = $(j_ray_direction)" begin
+                        x_ray_stop, y_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style)
+                        Test.@test test_ray_stop(division_style, x_ray_stop, 9)
+                        Test.@test test_ray_stop(division_style, y_ray_stop, 25)
+                        Test.@test i_ray_hit_tile == convert(I, 1)
+                        Test.@test j_ray_hit_tile == convert(I, 4)
+                        Test.@test hit_dimension == 1
+                    end
+
+                    i_ray_direction = convert(I, -3)
                     j_ray_direction = convert(I, -1)
                     Test.@testset "i_ray_direction = $(i_ray_direction), j_ray_direction = $(j_ray_direction)" begin
                         x_ray_stop, y_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style)
-                        Test.@test x_ray_stop == convert(Rational, 25)
-                        Test.@test y_ray_stop == convert(Rational, 25)
+                        Test.@test test_ray_stop(division_style, x_ray_stop, 25)
+                        Test.@test test_ray_stop(division_style, y_ray_stop, 25)
+                        Test.@test i_ray_hit_tile == convert(I, 3)
+                        Test.@test j_ray_hit_tile == convert(I, 3)
+                        Test.@test hit_dimension == 2
+                    end
+
+                    i_ray_direction = convert(I, -1)
+                    j_ray_direction = convert(I, -1)
+                    Test.@testset "i_ray_direction = $(i_ray_direction), j_ray_direction = $(j_ray_direction)" begin
+                        x_ray_stop, y_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style)
+                        Test.@test test_ray_stop(division_style, x_ray_stop, 25)
+                        Test.@test test_ray_stop(division_style, y_ray_stop, 25)
+                        Test.@test i_ray_hit_tile == convert(I, 3)
+                        Test.@test j_ray_hit_tile == convert(I, 3)
+                        Test.@test hit_dimension == 2
+                    end
+
+                    i_ray_direction = convert(I, -1)
+                    j_ray_direction = convert(I, -3)
+                    Test.@testset "i_ray_direction = $(i_ray_direction), j_ray_direction = $(j_ray_direction)" begin
+                        x_ray_stop, y_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style)
+                        Test.@test test_ray_stop(division_style, x_ray_stop, 25)
+                        Test.@test test_ray_stop(division_style, y_ray_stop, 25)
                         Test.@test i_ray_hit_tile == convert(I, 3)
                         Test.@test j_ray_hit_tile == convert(I, 3)
                         Test.@test hit_dimension == 2
@@ -234,8 +302,19 @@ Test.@testset "RayCaster.jl" begin
                     j_ray_direction = convert(I, -1)
                     Test.@testset "i_ray_direction = $(i_ray_direction), j_ray_direction = $(j_ray_direction)" begin
                         x_ray_stop, y_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style)
-                        Test.@test x_ray_stop == convert(Rational, 25)
-                        Test.@test y_ray_stop == convert(Rational, 9)
+                        Test.@test test_ray_stop(division_style, x_ray_stop, 25)
+                        Test.@test test_ray_stop(division_style, y_ray_stop, 9)
+                        Test.@test i_ray_hit_tile == convert(I, 4)
+                        Test.@test j_ray_hit_tile == convert(I, 1)
+                        Test.@test hit_dimension == 2
+                    end
+
+                    i_ray_direction = convert(I, 1)
+                    j_ray_direction = convert(I, -3)
+                    Test.@testset "i_ray_direction = $(i_ray_direction), j_ray_direction = $(j_ray_direction)" begin
+                        x_ray_stop, y_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style)
+                        Test.@test test_ray_stop(division_style, x_ray_stop, 91//3)
+                        Test.@test test_ray_stop(division_style, y_ray_stop, 9)
                         Test.@test i_ray_hit_tile == convert(I, 4)
                         Test.@test j_ray_hit_tile == convert(I, 1)
                         Test.@test hit_dimension == 2
@@ -245,8 +324,19 @@ Test.@testset "RayCaster.jl" begin
                     j_ray_direction = convert(I, -1)
                     Test.@testset "i_ray_direction = $(i_ray_direction), j_ray_direction = $(j_ray_direction)" begin
                         x_ray_stop, y_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style)
-                        Test.@test x_ray_stop == convert(Rational, 33)
-                        Test.@test y_ray_stop == convert(Rational, 17)
+                        Test.@test test_ray_stop(division_style, x_ray_stop, 33)
+                        Test.@test test_ray_stop(division_style, y_ray_stop, 17)
+                        Test.@test i_ray_hit_tile == convert(I, 5)
+                        Test.@test j_ray_hit_tile == convert(I, 3)
+                        Test.@test hit_dimension == 1
+                    end
+
+                    i_ray_direction = convert(I, 3)
+                    j_ray_direction = convert(I, -1)
+                    Test.@testset "i_ray_direction = $(i_ray_direction), j_ray_direction = $(j_ray_direction)" begin
+                        x_ray_stop, y_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style)
+                        Test.@test test_ray_stop(division_style, x_ray_stop, 33)
+                        Test.@test test_ray_stop(division_style, y_ray_stop, 67//3)
                         Test.@test i_ray_hit_tile == convert(I, 5)
                         Test.@test j_ray_hit_tile == convert(I, 3)
                         Test.@test hit_dimension == 1
@@ -272,8 +362,8 @@ Test.@testset "RayCaster.jl" begin
                     j_ray_direction = convert(I, 0)
                     Test.@testset "i_ray_direction = $(i_ray_direction), j_ray_direction = $(j_ray_direction)" begin
                         x_ray_stop, y_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style)
-                        Test.@test x_ray_stop == convert(Rational, 5)
-                        Test.@test y_ray_stop == convert(Rational, 4)
+                        Test.@test test_ray_stop(division_style, x_ray_stop, 5)
+                        Test.@test test_ray_stop(division_style, y_ray_stop, 4)
                         Test.@test i_ray_hit_tile == convert(I, 5)
                         Test.@test j_ray_hit_tile == convert(I, 4)
                         Test.@test hit_dimension == 1
@@ -283,8 +373,8 @@ Test.@testset "RayCaster.jl" begin
                     j_ray_direction = convert(I, 1)
                     Test.@testset "i_ray_direction = $(i_ray_direction), j_ray_direction = $(j_ray_direction)" begin
                         x_ray_stop, y_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style)
-                        Test.@test x_ray_stop == convert(Rational, 5)
-                        Test.@test y_ray_stop == convert(Rational, 5)
+                        Test.@test test_ray_stop(division_style, x_ray_stop, 5)
+                        Test.@test test_ray_stop(division_style, y_ray_stop, 5)
                         Test.@test i_ray_hit_tile == convert(I, 5)
                         Test.@test j_ray_hit_tile == convert(I, 4)
                         Test.@test hit_dimension == 1
@@ -294,8 +384,8 @@ Test.@testset "RayCaster.jl" begin
                     j_ray_direction = convert(I, 1)
                     Test.@testset "i_ray_direction = $(i_ray_direction), j_ray_direction = $(j_ray_direction)" begin
                         x_ray_stop, y_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style)
-                        Test.@test x_ray_stop == convert(Rational, 4)
-                        Test.@test y_ray_stop == convert(Rational, 5)
+                        Test.@test test_ray_stop(division_style, x_ray_stop, 4)
+                        Test.@test test_ray_stop(division_style, y_ray_stop, 5)
                         Test.@test i_ray_hit_tile == convert(I, 4)
                         Test.@test j_ray_hit_tile == convert(I, 5)
                         Test.@test hit_dimension == 2
@@ -305,8 +395,8 @@ Test.@testset "RayCaster.jl" begin
                     j_ray_direction = convert(I, 1)
                     Test.@testset "i_ray_direction = $(i_ray_direction), j_ray_direction = $(j_ray_direction)" begin
                         x_ray_stop, y_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style)
-                        Test.@test x_ray_stop == convert(Rational, 3)
-                        Test.@test y_ray_stop == convert(Rational, 5)
+                        Test.@test test_ray_stop(division_style, x_ray_stop, 3)
+                        Test.@test test_ray_stop(division_style, y_ray_stop, 5)
                         Test.@test i_ray_hit_tile == convert(I, 2)
                         Test.@test j_ray_hit_tile == convert(I, 5)
                         Test.@test hit_dimension == 2
@@ -316,8 +406,8 @@ Test.@testset "RayCaster.jl" begin
                     j_ray_direction = convert(I, 0)
                     Test.@testset "i_ray_direction = $(i_ray_direction), j_ray_direction = $(j_ray_direction)" begin
                         x_ray_stop, y_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style)
-                        Test.@test x_ray_stop == convert(Rational, 2)
-                        Test.@test y_ray_stop == convert(Rational, 4)
+                        Test.@test test_ray_stop(division_style, x_ray_stop, 2)
+                        Test.@test test_ray_stop(division_style, y_ray_stop, 4)
                         Test.@test i_ray_hit_tile == convert(I, 1)
                         Test.@test j_ray_hit_tile == convert(I, 4)
                         Test.@test hit_dimension == 1
@@ -327,8 +417,8 @@ Test.@testset "RayCaster.jl" begin
                     j_ray_direction = convert(I, -1)
                     Test.@testset "i_ray_direction = $(i_ray_direction), j_ray_direction = $(j_ray_direction)" begin
                         x_ray_stop, y_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style)
-                        Test.@test x_ray_stop == convert(Rational, 4)
-                        Test.@test y_ray_stop == convert(Rational, 4)
+                        Test.@test test_ray_stop(division_style, x_ray_stop, 4)
+                        Test.@test test_ray_stop(division_style, y_ray_stop, 4)
                         Test.@test i_ray_hit_tile == convert(I, 3)
                         Test.@test j_ray_hit_tile == convert(I, 3)
                         Test.@test hit_dimension == 2
@@ -338,8 +428,8 @@ Test.@testset "RayCaster.jl" begin
                     j_ray_direction = convert(I, -1)
                     Test.@testset "i_ray_direction = $(i_ray_direction), j_ray_direction = $(j_ray_direction)" begin
                         x_ray_stop, y_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style)
-                        Test.@test x_ray_stop == convert(Rational, 4)
-                        Test.@test y_ray_stop == convert(Rational, 2)
+                        Test.@test test_ray_stop(division_style, x_ray_stop, 4)
+                        Test.@test test_ray_stop(division_style, y_ray_stop, 2)
                         Test.@test i_ray_hit_tile == convert(I, 4)
                         Test.@test j_ray_hit_tile == convert(I, 1)
                         Test.@test hit_dimension == 2
@@ -349,8 +439,8 @@ Test.@testset "RayCaster.jl" begin
                     j_ray_direction = convert(I, -1)
                     Test.@testset "i_ray_direction = $(i_ray_direction), j_ray_direction = $(j_ray_direction)" begin
                         x_ray_stop, y_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style)
-                        Test.@test x_ray_stop == convert(Rational, 5)
-                        Test.@test y_ray_stop == convert(Rational, 3)
+                        Test.@test test_ray_stop(division_style, x_ray_stop, 5)
+                        Test.@test test_ray_stop(division_style, y_ray_stop, 3)
                         Test.@test i_ray_hit_tile == convert(I, 5)
                         Test.@test j_ray_hit_tile == convert(I, 3)
                         Test.@test hit_dimension == 1
