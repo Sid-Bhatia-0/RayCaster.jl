@@ -4,11 +4,10 @@ abstract type AbstractDivisionStyle end
 
 struct FloatDivision <: AbstractDivisionStyle end
 const FLOAT_DIVISION = FloatDivision()
+divide(::FloatDivision, x, y) = x / y
 
 struct RationalDivision <: AbstractDivisionStyle end
 const RATIONAL_DIVISION = RationalDivision()
-
-divide(::FloatDivision, x, y) = x / y
 divide(::RationalDivision, x, y) = x // y
 
 get_tile_start(i, tile_length) = (i - one(i)) * tile_length + one(tile_length)
