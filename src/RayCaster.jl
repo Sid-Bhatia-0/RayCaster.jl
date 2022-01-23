@@ -14,38 +14,38 @@ divide(::RationalDivision, x, y) = x // y
 get_tile_start(i, tile_length) = (i - one(i)) * tile_length + one(tile_length)
 get_tile_end(i, tile_length) = i * tile_length + one(tile_length)
 
-cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, x_ray_start, y_ray_start, i_ray_direction, j_ray_direction, max_steps, division_style::AbstractDivisionStyle) = cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, fld1(x_ray_start, tile_length), fld1(y_ray_start, tile_length), i_ray_direction, j_ray_direction, max_steps, division_style)
+cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, x_ray_start, y_ray_start, x_ray_direction, y_ray_direction, max_steps, division_style::AbstractDivisionStyle) = cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, fld1(x_ray_start, tile_length), fld1(y_ray_start, tile_length), x_ray_direction, y_ray_direction, max_steps, division_style)
 
-function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, x_ray_start, y_ray_start, i_ray_start_tile, j_ray_start_tile, i_ray_direction, j_ray_direction, max_steps, division_style::AbstractDivisionStyle)
-    @assert !(iszero(i_ray_direction) && iszero(j_ray_direction))
+function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, x_ray_start, y_ray_start, i_ray_start_tile, j_ray_start_tile, x_ray_direction, y_ray_direction, max_steps, division_style::AbstractDivisionStyle)
+    @assert !(iszero(x_ray_direction) && iszero(y_ray_direction))
     @assert !obstacle_tile_map[i_ray_start_tile, j_ray_start_tile]
     @assert !(x_ray_start == get_tile_start(firstindex(obstacle_tile_map, 1), tile_length))
     @assert !(y_ray_start == get_tile_start(firstindex(obstacle_tile_map, 2), tile_length))
     @assert !(x_ray_start == get_tile_end(lastindex(obstacle_tile_map, 1), tile_length))
     @assert !(y_ray_start == get_tile_end(lastindex(obstacle_tile_map, 2), tile_length))
 
-    if i_ray_direction < zero(i_ray_direction)
+    if x_ray_direction < zero(x_ray_direction)
         i_tile_step_size = -one(i_ray_start_tile)
         distance_traveled_along_i_axis_to_exit_ray_start_tile = x_ray_start - get_tile_start(i_ray_start_tile, tile_length)
         sign_i_ray_direction = -one(x_ray_start)
-        abs_i_ray_direction = -i_ray_direction
+        abs_i_ray_direction = -x_ray_direction
     else
         i_tile_step_size = one(i_ray_start_tile)
         distance_traveled_along_i_axis_to_exit_ray_start_tile = get_tile_end(i_ray_start_tile, tile_length) - x_ray_start
         sign_i_ray_direction = one(x_ray_start)
-        abs_i_ray_direction = i_ray_direction
+        abs_i_ray_direction = x_ray_direction
     end
 
-    if j_ray_direction < zero(j_ray_direction)
+    if y_ray_direction < zero(y_ray_direction)
         j_tile_step_size = -one(j_ray_start_tile)
         distance_traveled_along_j_axis_to_exit_ray_start_tile = y_ray_start - get_tile_start(j_ray_start_tile, tile_length)
         sign_j_ray_direction = -one(y_ray_start)
-        abs_j_ray_direction = -j_ray_direction
+        abs_j_ray_direction = -y_ray_direction
     else
         j_tile_step_size = one(j_ray_start_tile)
         distance_traveled_along_j_axis_to_exit_ray_start_tile = get_tile_end(j_ray_start_tile, tile_length) - y_ray_start
         sign_j_ray_direction = one(y_ray_start)
-        abs_j_ray_direction = j_ray_direction
+        abs_j_ray_direction = y_ray_direction
     end
 
     scaled_increase_in_ray_length_per_tile_traveled_along_i_axis = tile_length * abs_j_ray_direction
