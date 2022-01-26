@@ -15,9 +15,7 @@ Test.@testset "RayCaster.jl" begin
 
     max_steps = 1024
     I = Int
-    # RayPositionType = Int
-    # RayDirectionType = Int
-    Test.@testset "TileLengthType = $(TileLengthType), max_steps = $(max_steps), division_style = $(division_style)" for (division_style, RayPositionType, RayDirectionType) in [(RC.RATIONAL_DIVISION, Int, Int), (RC.FLOAT_DIVISION, Float64, Float64)], TileLengthType in [Int, Int32]
+    Test.@testset "TileLengthType = $(TileLengthType), RayPositionType = $(RayPositionType), RayDirectionType = $(RayDirectionType), max_steps = $(max_steps), division_style = $(division_style)" for (division_style, RayPositionType, RayDirectionType) in [(RC.RATIONAL_DIVISION, Int, Int), (RC.FLOAT_DIVISION, Float64, Float64)], TileLengthType in [Int, Int32]
 
         tile_length = convert(TileLengthType, 8)
         Test.@testset "tile_length = $(tile_length)" begin
