@@ -14,9 +14,9 @@ get_tile_start(i, tile_length) = (i - one(i)) * tile_length + one(tile_length)
 get_tile_end(i, tile_length) = i * tile_length + one(tile_length)
 get_tile(x, tile_length) = fld1(convert(Int, x), tile_length)
 
-cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, x_ray_start, y_ray_start, x_ray_direction, y_ray_direction, max_steps, division_style::AbstractDivisionStyle) = cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, get_tile(x_ray_start, tile_length), get_tile(y_ray_start, tile_length), x_ray_direction, y_ray_direction, max_steps, division_style)
+cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, x_ray_start, y_ray_start, x_ray_direction, y_ray_direction, max_steps::Integer, division_style::AbstractDivisionStyle) = cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, get_tile(x_ray_start, tile_length), get_tile(y_ray_start, tile_length), x_ray_direction, y_ray_direction, max_steps, division_style)
 
-function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, x_ray_start, y_ray_start, i_ray_start_tile, j_ray_start_tile, x_ray_direction, y_ray_direction, max_steps, division_style::AbstractDivisionStyle)
+function cast_ray(obstacle_tile_map::AbstractArray{Bool, 2}, tile_length, x_ray_start, y_ray_start, i_ray_start_tile, j_ray_start_tile, x_ray_direction, y_ray_direction, max_steps::Integer, division_style::AbstractDivisionStyle)
     @assert max_steps > zero(max_steps)
     @assert tile_length > zero(tile_length)
     @assert !(iszero(x_ray_direction) && iszero(y_ray_direction))
