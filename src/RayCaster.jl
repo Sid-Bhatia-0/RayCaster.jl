@@ -14,6 +14,9 @@ get_tile_start(i, tile_length) = (i - one(i)) * tile_length + one(tile_length)
 get_tile_end(i, tile_length) = i * tile_length + one(tile_length)
 get_tile(x, tile_length) = fld1(convert(Int, x), tile_length)
 
+scaled_section_formula(x1, y1, x2, y2, m, n) = (m * x2 + n * x1, m * y2 + n * y1)
+rotate_plus_90_degrees(x, y) = (-y, x)
+
 cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_ray_direction, y_ray_direction, max_steps, division_style) = cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_ray_direction, y_ray_direction, max_steps, division_style, get_tile(x_ray_start, tile_length), get_tile(y_ray_start, tile_length))
 
 function cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_ray_direction, y_ray_direction, max_steps, division_style, i_ray_start_tile, j_ray_start_tile)
@@ -90,6 +93,37 @@ function cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_ra
     y_ray_stop = y_ray_start + sign_y_ray_direction * width_ray_triangle
 
     return x_ray_stop, y_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension
+end
+
+cast_rays!(outputs, obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_direction, y_direction, semi_field_of_view_ratio, max_steps, division_style) = cast_rays!(outputs, obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_direction, y_direction, semi_field_of_view_ratio, max_steps, division_style, get_tile(x_ray_start, tile_length), get_tile(y_ray_start, tile_length))
+
+function cast_rays!(outputs, obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_direction, y_direction, semi_field_of_view_ratio, max_steps, division_style, i_ray_start_tile, j_ray_start_tile)
+    num_rays = length(outputs)
+
+    numerator_semi_field_of_view_ratio = numerator(semi_field_of_view_ratio)
+    denominator_semi_field_of_view_ratio = denominator(semi_field_of_view_ratio)
+
+    x_camera_plane_direction, y_camera_plane_direction = rotate_plus_90_degrees(x_direction, y_direction)
+
+    x_mid_ray_direction = denominator_semi_field_of_view_ratio * x_direction
+    y_mid_ray_direction = denominator_semi_field_of_view_ratio * y_direction
+
+    x_right_ray_direction = x_mid_ray_direction - numerator_semi_field_of_view_ratio * x_camera_plane_direction
+    y_right_ray_direction = y_mid_ray_direction - numerator_semi_field_of_view_ratio * y_camera_plane_direction
+
+    x_left_ray_direction = x_mid_ray_direction + numerator_semi_field_of_view_ratio * x_camera_plane_direction
+    y_left_ray_direction = y_mid_ray_direction + numerator_semi_field_of_view_ratio * y_camera_plane_direction
+
+    num_segments = num_rays - one(num_rays)
+    k = zero(num_segments)
+
+    for i in eachindex(outputs)
+        x_ray_direction, y_ray_direction = scaled_section_formula(x_left_ray_direction, y_left_ray_direction, x_right_ray_direction, y_right_ray_direction, k, num_segments - k)
+        outputs[i] = (cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_ray_direction, y_ray_direction, max_steps, division_style, i_ray_start_tile, j_ray_start_tile)..., x_ray_direction, y_ray_direction)
+        k += one(k)
+    end
+
+    return nothing
 end
 
 end

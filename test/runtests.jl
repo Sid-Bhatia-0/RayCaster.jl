@@ -4,6 +4,9 @@ import Test
 test_ray_stop(division_style::RC.RationalDivision, x_ray_stop_computed, x_ray_stop_actual) = x_ray_stop_computed == convert(Rational, x_ray_stop_actual)
 test_ray_stop(division_style::RC.FloatDivision, x_ray_stop_computed, x_ray_stop_actual) = x_ray_stop_computed ≈ convert(Float64, x_ray_stop_actual)
 
+get_concrete_ray_stop_type(division_style::RC.RationalDivision) = Rational{Int}
+get_concrete_ray_stop_type(division_style::RC.FloatDivision) = Float64
+
 Test.@testset "RayCaster.jl" begin
     obstacle_tile_map = BitArray([
                                   1 1 1 1 1
@@ -444,6 +447,33 @@ Test.@testset "RayCaster.jl" begin
                         Test.@test i_ray_hit_tile == convert(I, 5)
                         Test.@test j_ray_hit_tile == convert(I, 3)
                         Test.@test hit_dimension == 1
+                    end
+                end
+            end
+        end
+
+
+        tile_length = convert(TileLengthType, 256)
+        Test.@testset "tile_length = $(tile_length)" begin
+
+            i_ray_start_tile = convert(I, 2)
+            j_ray_start_tile = convert(I, 2)
+            Test.@testset "i_ray_start_tile = $(i_ray_start_tile), j_ray_start_tile = $(j_ray_start_tile)" begin
+
+                x_ray_start_relative_to_tile = convert(I, tile_length ÷ 2 + 1)
+                y_ray_start_relative_to_tile = convert(I, tile_length ÷ 2 + 1)
+                x_ray_start = convert(RayPositionType, RC.get_tile_start(i_ray_start_tile, tile_length) + x_ray_start_relative_to_tile - one(x_ray_start_relative_to_tile))
+                y_ray_start = convert(RayPositionType, RC.get_tile_start(j_ray_start_tile, tile_length) + y_ray_start_relative_to_tile - one(y_ray_start_relative_to_tile))
+                Test.@testset "x_ray_start = $(x_ray_start), y_ray_start = $(y_ray_start)" begin
+
+                    x_direction = convert(RayDirectionType, 1)
+                    y_direction = convert(RayDirectionType, 1)
+                    semi_field_of_view_ratio = 2//3
+                    num_rays = 9
+                    Test.@testset "x_direction = $(x_direction), y_direction = $(y_direction)" begin
+                        concrete_ray_stop_type = get_concrete_ray_stop_type(division_style)
+                        outputs = Vector{Tuple{concrete_ray_stop_type, concrete_ray_stop_type, I, I, Int, RayDirectionType, RayDirectionType}}(undef, num_rays)
+                        RC.cast_rays!(outputs, obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_direction, y_direction, semi_field_of_view_ratio, max_steps, division_style, i_ray_start_tile, j_ray_start_tile)
                     end
                 end
             end
