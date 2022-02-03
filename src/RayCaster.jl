@@ -12,7 +12,7 @@ divide(::RationalDivision, x, y) = x // y
 
 get_tile_start(i, tile_length) = (i - one(i)) * tile_length + one(tile_length)
 get_tile_end(i, tile_length) = i * tile_length + one(tile_length)
-get_tile(x, tile_length) = fld1(convert(Int, x), tile_length)
+get_tile(x, tile_length) = convert(Int, fld1(x, tile_length))
 
 scaled_section_formula(x1, y1, x2, y2, m, n) = (m * x2 + n * x1, m * y2 + n * y1)
 rotate_plus_90_degrees(x, y) = (-y, x)
