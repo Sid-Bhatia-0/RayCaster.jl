@@ -23,8 +23,8 @@ Test.@testset "RayCaster.jl" begin
 
                 x_ray_start_relative_to_tile = convert(I, 1)
                 y_ray_start_relative_to_tile = convert(I, 1)
-                x_ray_start = convert(RayPositionType, RC.get_tile_start(i_ray_start_tile, tile_length) + x_ray_start_relative_to_tile - one(x_ray_start_relative_to_tile))
-                y_ray_start = convert(RayPositionType, RC.get_tile_start(j_ray_start_tile, tile_length) + y_ray_start_relative_to_tile - one(y_ray_start_relative_to_tile))
+                x_ray_start = convert(RayPositionType, RC.get_segment_start(i_ray_start_tile, tile_length) + x_ray_start_relative_to_tile - one(x_ray_start_relative_to_tile))
+                y_ray_start = convert(RayPositionType, RC.get_segment_start(j_ray_start_tile, tile_length) + y_ray_start_relative_to_tile - one(y_ray_start_relative_to_tile))
                 Test.@testset "x_ray_start = $(x_ray_start), y_ray_start = $(y_ray_start)" begin
 
                     x_ray_direction = convert(RayDirectionType, 1)
@@ -118,8 +118,8 @@ Test.@testset "RayCaster.jl" begin
 
                 x_ray_start_relative_to_tile = convert(I, 9)
                 y_ray_start_relative_to_tile = convert(I, 5)
-                x_ray_start = convert(RayPositionType, RC.get_tile_start(i_ray_start_tile, tile_length) + x_ray_start_relative_to_tile - one(x_ray_start_relative_to_tile))
-                y_ray_start = convert(RayPositionType, RC.get_tile_start(j_ray_start_tile, tile_length) + y_ray_start_relative_to_tile - one(y_ray_start_relative_to_tile))
+                x_ray_start = convert(RayPositionType, RC.get_segment_start(i_ray_start_tile, tile_length) + x_ray_start_relative_to_tile - one(x_ray_start_relative_to_tile))
+                y_ray_start = convert(RayPositionType, RC.get_segment_start(j_ray_start_tile, tile_length) + y_ray_start_relative_to_tile - one(y_ray_start_relative_to_tile))
                 Test.@testset "x_ray_start = $(x_ray_start), y_ray_start = $(y_ray_start)" begin
 
                     x_ray_direction = convert(RayDirectionType, 0)
@@ -136,8 +136,8 @@ Test.@testset "RayCaster.jl" begin
 
                 x_ray_start_relative_to_tile = convert(I, 5)
                 y_ray_start_relative_to_tile = convert(I, 9)
-                x_ray_start = convert(RayPositionType, RC.get_tile_start(i_ray_start_tile, tile_length) + x_ray_start_relative_to_tile - one(x_ray_start_relative_to_tile))
-                y_ray_start = convert(RayPositionType, RC.get_tile_start(j_ray_start_tile, tile_length) + y_ray_start_relative_to_tile - one(y_ray_start_relative_to_tile))
+                x_ray_start = convert(RayPositionType, RC.get_segment_start(i_ray_start_tile, tile_length) + x_ray_start_relative_to_tile - one(x_ray_start_relative_to_tile))
+                y_ray_start = convert(RayPositionType, RC.get_segment_start(j_ray_start_tile, tile_length) + y_ray_start_relative_to_tile - one(y_ray_start_relative_to_tile))
                 Test.@testset "x_ray_start = $(x_ray_start), y_ray_start = $(y_ray_start)" begin
 
                     x_ray_direction = convert(RayDirectionType, 1)
@@ -159,8 +159,8 @@ Test.@testset "RayCaster.jl" begin
 
                 x_ray_start_relative_to_tile = convert(I, 1)
                 y_ray_start_relative_to_tile = convert(I, 1)
-                x_ray_start = convert(RayPositionType, RC.get_tile_start(i_ray_start_tile, tile_length) + x_ray_start_relative_to_tile - one(x_ray_start_relative_to_tile))
-                y_ray_start = convert(RayPositionType, RC.get_tile_start(j_ray_start_tile, tile_length) + y_ray_start_relative_to_tile - one(y_ray_start_relative_to_tile))
+                x_ray_start = convert(RayPositionType, RC.get_segment_start(i_ray_start_tile, tile_length) + x_ray_start_relative_to_tile - one(x_ray_start_relative_to_tile))
+                y_ray_start = convert(RayPositionType, RC.get_segment_start(j_ray_start_tile, tile_length) + y_ray_start_relative_to_tile - one(y_ray_start_relative_to_tile))
                 Test.@testset "x_ray_start = $(x_ray_start), y_ray_start = $(y_ray_start)" begin
 
                     x_ray_direction = convert(RayDirectionType, 1)
@@ -351,8 +351,8 @@ Test.@testset "RayCaster.jl" begin
 
                 x_ray_start_relative_to_tile = convert(I, 1)
                 y_ray_start_relative_to_tile = convert(I, 1)
-                x_ray_start = convert(RayPositionType, RC.get_tile_start(i_ray_start_tile, tile_length) + x_ray_start_relative_to_tile - one(x_ray_start_relative_to_tile))
-                y_ray_start = convert(RayPositionType, RC.get_tile_start(j_ray_start_tile, tile_length) + y_ray_start_relative_to_tile - one(y_ray_start_relative_to_tile))
+                x_ray_start = convert(RayPositionType, RC.get_segment_start(i_ray_start_tile, tile_length) + x_ray_start_relative_to_tile - one(x_ray_start_relative_to_tile))
+                y_ray_start = convert(RayPositionType, RC.get_segment_start(j_ray_start_tile, tile_length) + y_ray_start_relative_to_tile - one(y_ray_start_relative_to_tile))
                 Test.@testset "x_ray_start = $(x_ray_start), y_ray_start = $(y_ray_start)" begin
 
                     x_ray_direction = convert(RayDirectionType, 1)
@@ -455,8 +455,8 @@ Test.@testset "RayCaster.jl" begin
 
                 x_ray_start_relative_to_tile = convert(I, tile_length ÷ 2 + 1)
                 y_ray_start_relative_to_tile = convert(I, tile_length ÷ 2 + 1)
-                x_ray_start = convert(RayPositionType, RC.get_tile_start(i_ray_start_tile, tile_length) + x_ray_start_relative_to_tile - one(x_ray_start_relative_to_tile))
-                y_ray_start = convert(RayPositionType, RC.get_tile_start(j_ray_start_tile, tile_length) + y_ray_start_relative_to_tile - one(y_ray_start_relative_to_tile))
+                x_ray_start = convert(RayPositionType, RC.get_segment_start(i_ray_start_tile, tile_length) + x_ray_start_relative_to_tile - one(x_ray_start_relative_to_tile))
+                y_ray_start = convert(RayPositionType, RC.get_segment_start(j_ray_start_tile, tile_length) + y_ray_start_relative_to_tile - one(y_ray_start_relative_to_tile))
                 Test.@testset "x_ray_start = $(x_ray_start), y_ray_start = $(y_ray_start)" begin
 
                     x_direction = convert(RayDirectionType, 1)
