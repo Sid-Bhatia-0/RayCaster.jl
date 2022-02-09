@@ -1,44 +1,44 @@
 module RayCaster
 
-get_tile_start(i, tile_length) = (i - one(i)) * tile_length + one(tile_length)
-get_tile_end(i, tile_length) = i * tile_length + one(tile_length)
-get_tile(x, tile_length) = convert(Int, fld1(x, tile_length))
+get_segment_start(i, segment_length) = (i - one(i)) * segment_length + one(segment_length)
+get_segment_end(i, segment_length) = i * segment_length + one(segment_length)
+get_segment(x, segment_length) = convert(Int, fld1(x, segment_length))
 
 scaled_section_formula(x1, y1, x2, y2, m, n) = (m * x2 + n * x1, m * y2 + n * y1)
 rotate_plus_90_degrees(x, y) = (-y, x)
 
-cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_ray_direction, y_ray_direction, max_steps) = cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_ray_direction, y_ray_direction, max_steps, get_tile(x_ray_start, tile_length), get_tile(y_ray_start, tile_length))
+cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_ray_direction, y_ray_direction, max_steps) = cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_ray_direction, y_ray_direction, max_steps, get_segment(x_ray_start, tile_length), get_segment(y_ray_start, tile_length))
 
 function cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_ray_direction, y_ray_direction, max_steps, i_ray_start_tile, j_ray_start_tile)
     @assert max_steps > zero(max_steps)
     @assert tile_length > zero(tile_length)
     @assert !(iszero(x_ray_direction) && iszero(y_ray_direction))
     @assert !obstacle_tile_map[i_ray_start_tile, j_ray_start_tile]
-    @assert !(x_ray_start == get_tile_start(firstindex(obstacle_tile_map, 1), tile_length))
-    @assert !(y_ray_start == get_tile_start(firstindex(obstacle_tile_map, 2), tile_length))
-    @assert !(x_ray_start == get_tile_end(lastindex(obstacle_tile_map, 1), tile_length))
-    @assert !(y_ray_start == get_tile_end(lastindex(obstacle_tile_map, 2), tile_length))
+    @assert !(x_ray_start == get_segment_start(firstindex(obstacle_tile_map, 1), tile_length))
+    @assert !(y_ray_start == get_segment_start(firstindex(obstacle_tile_map, 2), tile_length))
+    @assert !(x_ray_start == get_segment_end(lastindex(obstacle_tile_map, 1), tile_length))
+    @assert !(y_ray_start == get_segment_end(lastindex(obstacle_tile_map, 2), tile_length))
 
     if x_ray_direction < zero(x_ray_direction)
         i_tile_step_size = -one(i_ray_start_tile)
-        distance_traveled_along_x_axis_to_exit_ray_start_tile = x_ray_start - get_tile_start(i_ray_start_tile, tile_length)
+        distance_traveled_along_x_axis_to_exit_ray_start_tile = x_ray_start - get_segment_start(i_ray_start_tile, tile_length)
         sign_x_ray_direction = -one(x_ray_start)
         abs_x_ray_direction = -x_ray_direction
     else
         i_tile_step_size = one(i_ray_start_tile)
-        distance_traveled_along_x_axis_to_exit_ray_start_tile = get_tile_end(i_ray_start_tile, tile_length) - x_ray_start
+        distance_traveled_along_x_axis_to_exit_ray_start_tile = get_segment_end(i_ray_start_tile, tile_length) - x_ray_start
         sign_x_ray_direction = one(x_ray_start)
         abs_x_ray_direction = x_ray_direction
     end
 
     if y_ray_direction < zero(y_ray_direction)
         j_tile_step_size = -one(j_ray_start_tile)
-        distance_traveled_along_y_axis_to_exit_ray_start_tile = y_ray_start - get_tile_start(j_ray_start_tile, tile_length)
+        distance_traveled_along_y_axis_to_exit_ray_start_tile = y_ray_start - get_segment_start(j_ray_start_tile, tile_length)
         sign_y_ray_direction = -one(y_ray_start)
         abs_y_ray_direction = -y_ray_direction
     else
         j_tile_step_size = one(j_ray_start_tile)
-        distance_traveled_along_y_axis_to_exit_ray_start_tile = get_tile_end(j_ray_start_tile, tile_length) - y_ray_start
+        distance_traveled_along_y_axis_to_exit_ray_start_tile = get_segment_end(j_ray_start_tile, tile_length) - y_ray_start
         sign_y_ray_direction = one(y_ray_start)
         abs_y_ray_direction = y_ray_direction
     end
@@ -89,7 +89,7 @@ function cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_ra
     return x_ray_stop_numerator, x_ray_stop_denominator, y_ray_stop_numerator, y_ray_stop_denominator, i_ray_hit_tile, j_ray_hit_tile, hit_dimension
 end
 
-cast_rays!(outputs, obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_direction, y_direction, semi_field_of_view_ratio, max_steps) = cast_rays!(outputs, obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_direction, y_direction, semi_field_of_view_ratio, max_steps, get_tile(x_ray_start, tile_length), get_tile(y_ray_start, tile_length))
+cast_rays!(outputs, obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_direction, y_direction, semi_field_of_view_ratio, max_steps) = cast_rays!(outputs, obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_direction, y_direction, semi_field_of_view_ratio, max_steps, get_segment(x_ray_start, tile_length), get_segment(y_ray_start, tile_length))
 
 function cast_rays!(outputs, obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_direction, y_direction, semi_field_of_view_ratio, max_steps, i_ray_start_tile, j_ray_start_tile)
     num_rays = length(outputs)
