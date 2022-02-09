@@ -1,15 +1,5 @@
 module RayCaster
 
-abstract type AbstractDivisionStyle end
-
-struct FloatDivision <: AbstractDivisionStyle end
-const FLOAT_DIVISION = FloatDivision()
-divide(::FloatDivision, x, y) = x / y
-
-struct RationalDivision <: AbstractDivisionStyle end
-const RATIONAL_DIVISION = RationalDivision()
-divide(::RationalDivision, x, y) = x // y
-
 get_tile_start(i, tile_length) = (i - one(i)) * tile_length + one(tile_length)
 get_tile_end(i, tile_length) = i * tile_length + one(tile_length)
 get_tile(x, tile_length) = convert(Int, fld1(x, tile_length))
@@ -17,9 +7,9 @@ get_tile(x, tile_length) = convert(Int, fld1(x, tile_length))
 scaled_section_formula(x1, y1, x2, y2, m, n) = (m * x2 + n * x1, m * y2 + n * y1)
 rotate_plus_90_degrees(x, y) = (-y, x)
 
-cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_ray_direction, y_ray_direction, max_steps, division_style) = cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_ray_direction, y_ray_direction, max_steps, division_style, get_tile(x_ray_start, tile_length), get_tile(y_ray_start, tile_length))
+cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_ray_direction, y_ray_direction, max_steps) = cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_ray_direction, y_ray_direction, max_steps, get_tile(x_ray_start, tile_length), get_tile(y_ray_start, tile_length))
 
-function cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_ray_direction, y_ray_direction, max_steps, division_style, i_ray_start_tile, j_ray_start_tile)
+function cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_ray_direction, y_ray_direction, max_steps, i_ray_start_tile, j_ray_start_tile)
     @assert max_steps > zero(max_steps)
     @assert tile_length > zero(tile_length)
     @assert !(iszero(x_ray_direction) && iszero(y_ray_direction))
@@ -80,24 +70,28 @@ function cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_ra
     end
 
     if hit_dimension == 1
-        height_ray_triangle = distance_traveled_along_x_axis_to_exit_ray_start_tile + (i_steps_taken - one(i_steps_taken)) * tile_length
-        width_ray_triangle = divide(division_style, height_ray_triangle * abs_y_ray_direction, abs_x_ray_direction)
-        height_ray_triangle = oftype(width_ray_triangle, height_ray_triangle)
+        height_ray_triangle_numerator = distance_traveled_along_x_axis_to_exit_ray_start_tile + (i_steps_taken - one(i_steps_taken)) * tile_length
+        height_ray_triangle_denominator = one(height_ray_triangle_numerator)
+        width_ray_triangle_numerator = height_ray_triangle_numerator * abs_y_ray_direction
+        width_ray_triangle_denominator = abs_x_ray_direction
     else
-        width_ray_triangle = distance_traveled_along_y_axis_to_exit_ray_start_tile + (j_steps_taken - one(j_steps_taken)) * tile_length
-        height_ray_triangle = divide(division_style, width_ray_triangle * abs_x_ray_direction, abs_y_ray_direction)
-        width_ray_triangle = oftype(height_ray_triangle, width_ray_triangle)
+        width_ray_triangle_numerator = distance_traveled_along_y_axis_to_exit_ray_start_tile + (j_steps_taken - one(j_steps_taken)) * tile_length
+        width_ray_triangle_denominator = one(width_ray_triangle_numerator)
+        height_ray_triangle_numerator = width_ray_triangle_numerator * abs_x_ray_direction
+        height_ray_triangle_denominator = abs_y_ray_direction
     end
 
-    x_ray_stop = x_ray_start + sign_x_ray_direction * height_ray_triangle
-    y_ray_stop = y_ray_start + sign_y_ray_direction * width_ray_triangle
+    x_ray_stop_numerator = x_ray_start * height_ray_triangle_denominator + sign_x_ray_direction * height_ray_triangle_numerator
+    x_ray_stop_denominator = height_ray_triangle_denominator
+    y_ray_stop_numerator = y_ray_start * width_ray_triangle_denominator + sign_y_ray_direction * width_ray_triangle_numerator
+    y_ray_stop_denominator = width_ray_triangle_denominator
 
-    return x_ray_stop, y_ray_stop, i_ray_hit_tile, j_ray_hit_tile, hit_dimension
+    return x_ray_stop_numerator, x_ray_stop_denominator, y_ray_stop_numerator, y_ray_stop_denominator, i_ray_hit_tile, j_ray_hit_tile, hit_dimension
 end
 
-cast_rays!(outputs, obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_direction, y_direction, semi_field_of_view_ratio, max_steps, division_style) = cast_rays!(outputs, obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_direction, y_direction, semi_field_of_view_ratio, max_steps, division_style, get_tile(x_ray_start, tile_length), get_tile(y_ray_start, tile_length))
+cast_rays!(outputs, obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_direction, y_direction, semi_field_of_view_ratio, max_steps) = cast_rays!(outputs, obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_direction, y_direction, semi_field_of_view_ratio, max_steps, get_tile(x_ray_start, tile_length), get_tile(y_ray_start, tile_length))
 
-function cast_rays!(outputs, obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_direction, y_direction, semi_field_of_view_ratio, max_steps, division_style, i_ray_start_tile, j_ray_start_tile)
+function cast_rays!(outputs, obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_direction, y_direction, semi_field_of_view_ratio, max_steps, i_ray_start_tile, j_ray_start_tile)
     num_rays = length(outputs)
 
     numerator_semi_field_of_view_ratio = numerator(semi_field_of_view_ratio)
@@ -119,7 +113,7 @@ function cast_rays!(outputs, obstacle_tile_map, tile_length, x_ray_start, y_ray_
 
     for i in eachindex(outputs)
         x_ray_direction, y_ray_direction = scaled_section_formula(x_left_ray_direction, y_left_ray_direction, x_right_ray_direction, y_right_ray_direction, k, num_segments - k)
-        outputs[i] = (cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_ray_direction, y_ray_direction, max_steps, division_style, i_ray_start_tile, j_ray_start_tile)..., x_ray_direction, y_ray_direction)
+        outputs[i] = (cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_ray_direction, y_ray_direction, max_steps, i_ray_start_tile, j_ray_start_tile)..., x_ray_direction, y_ray_direction)
         k += one(k)
     end
 
