@@ -23,6 +23,7 @@ import RayCaster as RC
 # the side length of each tile is an integer value in the world units
 # the tile map is aligned with the fine-grained lattice formed by all integer coordinates of the world
 # so the top-left corner of the first tile is at (1, 1) and bottom-right corner is (tile_length + 1, tile_length + 1) where tile_length is an integer
+# the top left corner of the tile map is at world coordinate (1, 1)
 tile_length = 8
 
 # let's say we have the following tile map for our world
@@ -55,15 +56,6 @@ max_steps = 1024
 
 # upon casting the ray, we obtain the following output
 x_ray_stop_numerator, x_ray_stop_denominator, y_ray_stop_numerator, y_ray_stop_denominator, i_ray_hit_tile, j_ray_hit_tile, hit_dimension = RC.cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_ray_direction, y_ray_direction, max_steps)
-
-# print the outputs
-@show x_ray_stop_numerator
-@show x_ray_stop_denominator
-@show y_ray_stop_numerator
-@show y_ray_stop_denominator
-@show i_ray_hit_tile
-@show j_ray_hit_tile
-@show hit_dimension
 
 # x_ray_stop_numerator (an integer) is the numerator of the x-coordinate (in world units) of the point where the ray stops 
 # x_ray_stop_denominator (an integer) is the denominator of the x-coordinate (in world units) of the point where the ray stops
@@ -107,6 +99,22 @@ end
 # draw the ray
 SD.draw!(image, SD.Line(SD.Point(x_ray_start, y_ray_start), SD.Point(div(x_ray_stop_numerator, x_ray_stop_denominator, RoundNearest), div(y_ray_stop_numerator, y_ray_stop_denominator, RoundNearest))), color)
 
+@show height_obstacle_tile_map
+@show width_obstacle_tile_map
+@show tile_length
+@show x_ray_start
+@show y_ray_start
+@show x_ray_direction
+@show y_ray_direction
+@show max_steps
+@show x_ray_stop_numerator
+@show x_ray_stop_denominator
+@show y_ray_stop_numerator
+@show y_ray_stop_denominator
+@show i_ray_hit_tile
+@show j_ray_hit_tile
+@show hit_dimension
+
 # visualize the cast ray
 # in this visualization, a cell in the world (1 x 1 square unit region of the world) is represented by two consecutive unicode block characters (let's call this a block pixel)
 # the block pixel indexed at (x, y) corresponds to the world coordinate (x, y) where both x and y are integers
@@ -122,8 +130,8 @@ num_rays = 4
 # allocate an array to store the outputs of all the ray casts
 ray_cast_outputs = Vector{NTuple{9, Int}}(undef, num_rays)
 
-# the semi field of view
-semi_field_of_view_ratio = 1//1
+# the angle of the entire field of view is 2 * atan(inv(semi_field_of_view_ratio))
+semi_field_of_view_ratio = 2//1
 
 # the direction of the camera normal (central direction most direction of all the rays) number of rays that we want to cast
 x_camera_normal_direction = x_ray_direction
