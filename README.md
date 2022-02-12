@@ -9,6 +9,7 @@ This package provides a fast and exact (integer-based) implementation of 2D ray 
   - [API](#api)
   - [Integer-based computations](#integer-based-computations)
   - [Returning numerators and denominators separately](#returning-numerators-and-denominators-separately)
+* [Benchmarks](#benchmarks)
 * [Useful References](#useful-references)
 
 ## Getting started
@@ -157,7 +158,74 @@ We return numerators and denominators of ray stop coordinates separately instead
 1. `x_ray_stop_numerator / x_ray_stop_denominator` would be a floating point number I want all the outputs to always be exact. Later the callee may choose to convert these to floating point numbers, but it should be by choice of the callee.
 1. `x_ray_stop_numerator // x_ray_stop_denominator` would be an exact rational number, but constructing it will try to elimiate the greatest common diviser of the numerator and denominator internally. If the callee doesn't need that, then it is a unnecessary.
 
-### Useful references
+## Benchmarks
+
+This package can be benchmarked using the `benchmark.jl` script available in the `perf` directory.
+
+Go inside the `perf` directory and run the following command:
+
+```
+ perf $ julia --project=. -e 'import Pkg; Pkg.instantiate(); include("benchmark.jl")'
+```
+
+Here is an output generated using julia `v1.7.1`:
+
+```text
+...
+... some project instantiation info
+...
+Julia Version 1.7.1
+Commit ac5cc99908 (2021-12-22 19:35 UTC)
+Platform Info:
+  OS: Linux (x86_64-pc-linux-gnu)
+  CPU: Intel(R) Core(TM) i7-6500U CPU @ 2.50GHz
+  WORD_SIZE: 64
+  LIBM: libopenlibm
+  LLVM: libLLVM-12.0.1 (ORCJIT, skylake)
+
+height_obstacle_tile_map = 1024
+width_obstacle_tile_map = 1024
+tile_length = 256
+x_ray_start = 131073
+y_ray_start = 131073
+x_ray_direction = 3
+y_ray_direction = 1
+max_steps = 1024
+num_rays = 1024
+semi_field_of_view_ratio = 2//1
+x_camera_normal_direction = 3
+y_camera_normal_direction = 1
+
+#######################################################
+single ray cast
+#######################################################
+BenchmarkTools.Trial: 10000 samples with 10 evaluations.
+ Range (min … max):  1.915 μs …   5.595 μs  ┊ GC (min … max): 0.00% … 0.00%
+ Time  (median):     2.130 μs               ┊ GC (median):    0.00%
+ Time  (mean ± σ):   2.095 μs ± 217.750 ns  ┊ GC (mean ± σ):  0.00% ± 0.00%
+
+  █▄▄ ▃▁▂  ▁ ▁     ▁▇▆    ▂▃     ▂      ▅      ▃▄             ▂
+  ███▆██████▅█▇█▄█▄████▆█▆███▇▇▇▇█▇▆▆▇▅▇█▇▄▅▁▄▁██▁▄▄▄▃▁▁▅▄▄▃▄ █
+  1.92 μs      Histogram: log(frequency) by time      2.59 μs <
+
+ Memory estimate: 0 bytes, allocs estimate: 0.
+
+#######################################################
+multiple ray cast
+#######################################################
+BenchmarkTools.Trial: 1907 samples with 1 evaluation.
+ Range (min … max):  2.353 ms …  3.375 ms  ┊ GC (min … max): 0.00% … 0.00%
+ Time  (median):     2.602 ms              ┊ GC (median):    0.00%
+ Time  (mean ± σ):   2.620 ms ± 71.351 μs  ┊ GC (mean ± σ):  0.00% ± 0.00%
+
+                         ▃█▃▄▆▃▂▁▁▁                           
+  ▆▁▁▅▃▄▁▄▅▃▃▃▃▃▃▃▅▅▃▇▇▇███████████▇▆▆▇▆▅▄▃▄▆▃▅▁▄▃▅▄▃▆▃▄▁▁▃▅ █
+  2.35 ms      Histogram: log(frequency) by time     2.94 ms <
+
+ Memory estimate: 0 bytes, allocs estimate: 0.
+```
+
+## Useful references
 
 1. https://lodev.org/cgtutor/raycasting.html
 1. https://www.youtube.com/watch?v=NbSee-XM7WA
