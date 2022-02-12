@@ -141,7 +141,7 @@ This package does not export any names. The `cast_ray` and `cast_rays!` function
 
 ### Integer-based computations
 
-Version `0.1.0` of this package used floating point numbers. However, I find integers to be easier to reason about than floating point numbers, and I can understand and cover all corner cases exactly. Also, in this case, I believe the precision offered by using 64-bit integers is enough for most applications. I haven't benchmarked the integer-based implementation with a floating point implementation, but I believe that that using integers does not worsen performance as compared to a similar implementation using floating point numbers, if at all.
+Version `0.1.0` of this package used floating point numbers. However, I find integers to be easier to reason about than floating point numbers, and I can understand and cover all corner cases exactly. Also, in this case, I believe the precision offered by using 64-bit integers is enough for most applications.
 
 ### Returning numerators and denominators separately
 
