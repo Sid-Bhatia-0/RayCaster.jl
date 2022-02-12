@@ -7,6 +7,8 @@ This package provides a fast and exact (integer-based) implementation of 2D ray 
 * [Getting Started](#getting-started)
 * [Notes](#notes)
   - [API](#api)
+  - [Integer-based computations](#integer-based-computations)
+  - [Returning numerators and denominators separately](#returning-numerators-and-denominators-separately)
 * [Useful References](#useful-references)
 
 ## Getting started
@@ -141,9 +143,9 @@ This package does not export any names. The `cast_ray` and `cast_rays!` function
 
 Version `0.1.0` of this package used floating point numbers. However, I find integers to be easier to reason about than floating point numbers, and I can understand and cover all corner cases exactly. Also, in this case, I believe the precision offered by using 64-bit integers is enough for most applications. I haven't benchmarked the integer-based implementation with a floating point implementation, but I believe that that using integers does not worsen performance as compared to a similar implementation using floating point numbers, if at all.
 
-### Why return numerators and denominators separately instead of just (numerator / denominator) or (numerator // denominator)
+### Returning numerators and denominators separately
 
-With `x_ray_stop_numerator` and `x_ray_stop_denominator` being integers
+We return numerators and denominators of ray stop coordinates separately instead of just (numerator / denominator) or (numerator // denominator). With `x_ray_stop_numerator` and `x_ray_stop_denominator` being integers (similarly for `y`)
 1. `x_ray_stop_numerator / x_ray_stop_denominator` would be a floating point number I want all the outputs to always be exact. Later the callee may choose to convert these to floating point numbers, but it should be by choice of the callee.
 1. `x_ray_stop_numerator // x_ray_stop_denominator` would be an exact rational number, but constructing it will try to elimiate the greatest common diviser of the numerator and denominator internally. If the callee doesn't need that, then it is a unnecessary.
 
