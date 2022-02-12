@@ -1,7 +1,7 @@
 name = "RayCaster"
 uuid = "17f63090-eba8-4cc7-872a-3f6808909c39"
 authors = ["Siddharth Bhatia <sidb60200@gmail.com> and contributors"]
-version = "0.1.0"
+version = "0.2.0"
 
 [compat]
 julia = "1"
