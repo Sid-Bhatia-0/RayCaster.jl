@@ -1,7 +1,7 @@
 module RayCaster
 
-get_segment_start(i, segment_length) = (i - one(i)) * segment_length + one(segment_length)
-get_segment_end(i, segment_length) = i * segment_length + one(segment_length)
+get_segment_start(i, segment_length) = oftype(segment_length, (i - one(i)) * segment_length + one(segment_length))
+get_segment_end(i, segment_length) = oftype(segment_length, i * segment_length + one(segment_length))
 get_segment(x, segment_length) = convert(Int, fld1(x, segment_length))
 
 scaled_section_formula(x1, y1, x2, y2, m, n) = (m * x2 + n * x1, m * y2 + n * y1)
@@ -70,15 +70,15 @@ function cast_ray(obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_ra
     end
 
     if hit_dimension == 1
-        height_ray_triangle_numerator = distance_traveled_along_x_axis_to_exit_ray_start_tile + (i_steps_taken - one(i_steps_taken)) * tile_length
+        height_ray_triangle_numerator = oftype(tile_length, distance_traveled_along_x_axis_to_exit_ray_start_tile + (i_steps_taken - one(i_steps_taken)) * tile_length)
         height_ray_triangle_denominator = one(height_ray_triangle_numerator)
-        width_ray_triangle_numerator = height_ray_triangle_numerator * abs_y_ray_direction
-        width_ray_triangle_denominator = abs_x_ray_direction
+        width_ray_triangle_numerator = oftype(tile_length, height_ray_triangle_numerator * abs_y_ray_direction)
+        width_ray_triangle_denominator = oftype(tile_length, abs_x_ray_direction)
     else
-        width_ray_triangle_numerator = distance_traveled_along_y_axis_to_exit_ray_start_tile + (j_steps_taken - one(j_steps_taken)) * tile_length
+        width_ray_triangle_numerator = oftype(tile_length, distance_traveled_along_y_axis_to_exit_ray_start_tile + (j_steps_taken - one(j_steps_taken)) * tile_length)
         width_ray_triangle_denominator = one(width_ray_triangle_numerator)
-        height_ray_triangle_numerator = width_ray_triangle_numerator * abs_x_ray_direction
-        height_ray_triangle_denominator = abs_y_ray_direction
+        height_ray_triangle_numerator = oftype(tile_length, width_ray_triangle_numerator * abs_x_ray_direction)
+        height_ray_triangle_denominator = oftype(tile_length, abs_y_ray_direction)
     end
 
     x_ray_stop_numerator = x_ray_start * height_ray_triangle_denominator + sign_x_ray_direction * height_ray_triangle_numerator
