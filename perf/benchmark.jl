@@ -1,5 +1,9 @@
 import BenchmarkTools as BT
+import InteractiveUtils as IU
 import RayCaster as RC
+
+IU.versioninfo()
+println()
 
 height_obstacle_tile_map = 1024
 width_obstacle_tile_map = 1024
@@ -29,21 +33,6 @@ y_ray_direction = 1
 max_steps = 1024
 @show max_steps
 
-# compiling everything once
-BT.@benchmark RC.cast_ray($(Ref(obstacle_tile_map))[], $(Ref(tile_length))[], $(Ref(x_ray_start))[], $(Ref(y_ray_start))[], $(Ref(x_ray_direction))[], $(Ref(y_ray_direction))[], $(Ref(max_steps))[])
-
-println()
-println("****************")
-println("****************Benchmark single ray cast:***************")
-println("****************")
-display(BT.@benchmark RC.cast_ray($(Ref(obstacle_tile_map))[], $(Ref(tile_length))[], $(Ref(x_ray_start))[], $(Ref(y_ray_start))[], $(Ref(x_ray_direction))[], $(Ref(y_ray_direction))[], $(Ref(max_steps))[]))
-println()
-println()
-
-#####
-##### multi ray casting
-#####
-
 num_rays = 1024
 @show num_rays
 
@@ -58,12 +47,25 @@ y_camera_normal_direction = y_ray_direction
 @show y_camera_normal_direction
 
 # compiling everything once
+BT.@benchmark RC.cast_ray($(Ref(obstacle_tile_map))[], $(Ref(tile_length))[], $(Ref(x_ray_start))[], $(Ref(y_ray_start))[], $(Ref(x_ray_direction))[], $(Ref(y_ray_direction))[], $(Ref(max_steps))[])
+
+println()
+println("#######################################################")
+println("single ray cast")
+println("#######################################################")
+display(BT.@benchmark RC.cast_ray($(Ref(obstacle_tile_map))[], $(Ref(tile_length))[], $(Ref(x_ray_start))[], $(Ref(y_ray_start))[], $(Ref(x_ray_direction))[], $(Ref(y_ray_direction))[], $(Ref(max_steps))[]))
+println()
+
+#####
+##### multi ray casting
+#####
+
+# compiling everything once
 BT.@benchmark RC.cast_rays!($(Ref(ray_cast_outputs))[], $(Ref(obstacle_tile_map))[], $(Ref(tile_length))[], $(Ref(x_ray_start))[], $(Ref(y_ray_start))[], $(Ref(x_camera_normal_direction))[], $(Ref(y_camera_normal_direction))[], $(Ref(semi_field_of_view_ratio))[], $(Ref(max_steps))[])
 
 println()
-println("****************")
-println("****************Benchmark multi ray cast:***************")
-println("****************")
+println("#######################################################")
+println("multiple ray cast")
+println("#######################################################")
 display(BT.@benchmark RC.cast_rays!($(Ref(ray_cast_outputs))[], $(Ref(obstacle_tile_map))[], $(Ref(tile_length))[], $(Ref(x_ray_start))[], $(Ref(y_ray_start))[], $(Ref(x_camera_normal_direction))[], $(Ref(y_camera_normal_direction))[], $(Ref(semi_field_of_view_ratio))[], $(Ref(max_steps))[]))
-println()
 println()
