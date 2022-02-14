@@ -2,3 +2,4 @@
 BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
 InteractiveUtils = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 RayCaster = "17f63090-eba8-4cc7-872a-3f6808909c39"
+SaferIntegers = "88634af6-177f-5301-88b8-7819386cfa38"

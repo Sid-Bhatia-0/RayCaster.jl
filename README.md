@@ -150,7 +150,7 @@ This package does not export any names. The `cast_ray` and `cast_rays!` function
 
 ### Integer-based computations
 
-Version `0.1.0` of this package used floating point numbers. However, I find integers to be easier to reason about than floating point numbers, and I can understand and cover all corner cases exactly. Also, in this case, I believe the precision offered by using 64-bit integers is enough for most applications.
+Version `0.1.0` of this package used floating point numbers. However, I find integers to be easier to reason about than floating point numbers, and I can understand and cover all corner cases exactly. Also, in this case, I believe the precision offered by using 64-bit integers is enough for most applications. You can also use `SafeInt` from [SaferIntegers.jl](https://github.com/JeffreySarnoff/SaferIntegers.jl) to automatically check for overflow and underflow. This is a little slower than using `Int` (see [Benchmarks](#benchmarks)), but it might be okay for your application.
 
 ### Returning numerators and denominators separately
 
@@ -172,7 +172,7 @@ Here is an output generated using julia `v1.7.1`:
 
 ```text
 ...
-... some project instantiation info
+... some project instantiation info when running for the first time
 ...
 Julia Version 1.7.1
 Commit ac5cc99908 (2021-12-22 19:35 UTC)
@@ -182,6 +182,10 @@ Platform Info:
   WORD_SIZE: 64
   LIBM: libopenlibm
   LLVM: libLLVM-12.0.1 (ORCJIT, skylake)
+
+#######################################################
+Integer type: Int64
+#######################################################
 
 height_obstacle_tile_map = 1024
 width_obstacle_tile_map = 1024
@@ -196,33 +200,75 @@ semi_field_of_view_ratio = 2//1
 x_camera_normal_direction = 3
 y_camera_normal_direction = 1
 
-#######################################################
-single ray cast
-#######################################################
-BenchmarkTools.Trial: 10000 samples with 10 evaluations.
- Range (min … max):  1.915 μs …   5.595 μs  ┊ GC (min … max): 0.00% … 0.00%
- Time  (median):     2.130 μs               ┊ GC (median):    0.00%
- Time  (mean ± σ):   2.095 μs ± 217.750 ns  ┊ GC (mean ± σ):  0.00% ± 0.00%
+Single ray cast:
 
-  █▄▄ ▃▁▂  ▁ ▁     ▁▇▆    ▂▃     ▂      ▅      ▃▄             ▂
-  ███▆██████▅█▇█▄█▄████▆█▆███▇▇▇▇█▇▆▆▇▅▇█▇▄▅▁▄▁██▁▄▄▄▃▁▁▅▄▄▃▄ █
-  1.92 μs      Histogram: log(frequency) by time      2.59 μs <
+BenchmarkTools.Trial: 10000 samples with 9 evaluations.
+ Range (min … max):  2.073 μs …   5.962 μs  ┊ GC (min … max): 0.00% … 0.00%
+ Time  (median):     2.079 μs               ┊ GC (median):    0.00%
+ Time  (mean ± σ):   2.145 μs ± 177.811 ns  ┊ GC (mean ± σ):  0.00% ± 0.00%
+
+  █▇▁          ▂▂            ▂▁             ▆▃              ▅ ▂
+  ███▆▃▁▃▃▁▁▁▁▁██▄▄▃▁▄▃▁▁▁▁▁▁██▄▁▁▁▁▁▁▁▁▃▁▁▇██▆▅▅▄▅▃▄▃▁▁▁▄▁▇█ █
+  2.07 μs      Histogram: log(frequency) by time      2.38 μs <
+
+ Memory estimate: 0 bytes, allocs estimate: 0.
+
+Multiple ray cast:
+
+BenchmarkTools.Trial: 1989 samples with 1 evaluation.
+ Range (min … max):  2.484 ms …  3.201 ms  ┊ GC (min … max): 0.00% … 0.00%
+ Time  (median):     2.490 ms              ┊ GC (median):    0.00%
+ Time  (mean ± σ):   2.513 ms ± 56.807 μs  ┊ GC (mean ± σ):  0.00% ± 0.00%
+
+  █▆▂▂   ▆▄▂▃▁                                                
+  █████▅▄██████▆▇▇▅▇▇▄▃▃▁▃▅▃▅▃▄▄▅▃▁▃▁▅▃▁▃▃▃▁▁▁▄▁▃▁▃▄▁▃▆▄▁▁▃▃ █
+  2.48 ms      Histogram: log(frequency) by time     2.78 ms <
 
  Memory estimate: 0 bytes, allocs estimate: 0.
 
 #######################################################
-multiple ray cast
+Integer type: SaferIntegers.SafeInt64
 #######################################################
-BenchmarkTools.Trial: 1907 samples with 1 evaluation.
- Range (min … max):  2.353 ms …  3.375 ms  ┊ GC (min … max): 0.00% … 0.00%
- Time  (median):     2.602 ms              ┊ GC (median):    0.00%
- Time  (mean ± σ):   2.620 ms ± 71.351 μs  ┊ GC (mean ± σ):  0.00% ± 0.00%
 
-                         ▃█▃▄▆▃▂▁▁▁                           
-  ▆▁▁▅▃▄▁▄▅▃▃▃▃▃▃▃▅▅▃▇▇▇███████████▇▆▆▇▆▅▄▃▄▆▃▅▁▄▃▅▄▃▆▃▄▁▁▃▅ █
-  2.35 ms      Histogram: log(frequency) by time     2.94 ms <
+height_obstacle_tile_map = SaferIntegers.SafeInt64(1024)
+width_obstacle_tile_map = SaferIntegers.SafeInt64(1024)
+tile_length = SaferIntegers.SafeInt64(256)
+x_ray_start = SaferIntegers.SafeInt64(131073)
+y_ray_start = SaferIntegers.SafeInt64(131073)
+x_ray_direction = SaferIntegers.SafeInt64(3)
+y_ray_direction = SaferIntegers.SafeInt64(1)
+max_steps = SaferIntegers.SafeInt64(1024)
+num_rays = SaferIntegers.SafeInt64(1024)
+semi_field_of_view_ratio = 2//1
+x_camera_normal_direction = SaferIntegers.SafeInt64(3)
+y_camera_normal_direction = SaferIntegers.SafeInt64(1)
+
+Single ray cast:
+
+BenchmarkTools.Trial: 10000 samples with 9 evaluations.
+ Range (min … max):  2.574 μs …   7.239 μs  ┊ GC (min … max): 0.00% … 0.00%
+ Time  (median):     2.579 μs               ┊ GC (median):    0.00%
+ Time  (mean ± σ):   2.663 μs ± 262.205 ns  ┊ GC (mean ± σ):  0.00% ± 0.00%
+
+  █   ▃    ▃    ▅    ▄                                        ▁
+  █▄▃▁█▇▆▅▅█▄▅▇▅█▁▁▄▅█▆▁▃▄▃▃▄▅▁▃▃▃▁▃▁▃▄▄▁▃▄▁▁▃▃▁▃▁▁▁▃▁▄▄▁▁▁▁▄ █
+  2.57 μs      Histogram: log(frequency) by time      3.71 μs <
 
  Memory estimate: 0 bytes, allocs estimate: 0.
+
+Multiple ray cast:
+
+BenchmarkTools.Trial: 1583 samples with 1 evaluation.
+ Range (min … max):  3.121 ms …  4.010 ms  ┊ GC (min … max): 0.00% … 0.00%
+ Time  (median):     3.159 ms              ┊ GC (median):    0.00%
+ Time  (mean ± σ):   3.158 ms ± 68.768 μs  ┊ GC (mean ± σ):  0.00% ± 0.00%
+
+  █▆▁  ▄█▂▄  ▁                                                
+  ███▇▁████▇▆█▆▇▆▄▇▄▅▇▄▄▄▅▄▄▄▄▄▄▄▄▄▄▆▄▄▁▁▁▁▁▁▁▁▁▄▁▄▁▆▆▄▁▁▄▁▄ █
+  3.12 ms      Histogram: log(frequency) by time      3.5 ms <
+
+ Memory estimate: 0 bytes, allocs estimate: 0.
+
 ```
 
 ## Useful references
