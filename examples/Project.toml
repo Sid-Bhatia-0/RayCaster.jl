@@ -1,0 +1,4 @@
+[deps]
+MiniFB = "cc649173-1898-4bb8-8a16-ca5f88bd87d9"
+RayCaster = "17f63090-eba8-4cc7-872a-3f6808909c39"
+SimpleDraw = "d1acf6f4-8553-480e-80ae-3c883f0a995a"
