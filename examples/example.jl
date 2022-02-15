@@ -280,7 +280,7 @@ function play!(game::Game)
     height_top_view = height_tile_map * tile_length_pixels
     width_top_view = width_tile_map * tile_length_pixels
 
-    max_debug_lines = 4
+    max_debug_lines = 12
     max_debug_width = 64
     height_font = 32
     width_font = 16
@@ -311,9 +311,15 @@ function play!(game::Game)
     draw_top_view!(top_view, game, top_view_colors, tile_length_pixels)
 
     debug_info = String[]
+    push!(debug_info, "last_key_pressed: $(nothing)")
     push!(debug_info, "steps_taken: $(steps_taken)")
+    push!(debug_info, "tile_length: $(game.tile_length)")
     push!(debug_info, "player_position: $(game.player_position)")
+    push!(debug_info, "num_angles: $(game.num_angles)")
+    push!(debug_info, "player_angle: $(game.player_angle)")
     push!(debug_info, "player_direction: $(game.player_direction)")
+    push!(debug_info, "num_rays: $(game.num_rays)")
+    push!(debug_info, "semi_field_of_view_ratio: $(game.semi_field_of_view_ratio)")
     draw_debug_view!(debug_view, debug_info)
 
     copy_image_to_frame_buffer!(frame_buffer, image)
@@ -345,10 +351,15 @@ function play!(game::Game)
             draw_camera_view!(camera_view, game, camera_view_colors, tile_aspect_ratio_camera_view)
             draw_top_view!(top_view, game, top_view_colors, tile_length_pixels)
             empty!(debug_info)
-            push!(debug_info, "key: $(key)")
+            push!(debug_info, "last_key_pressed: $(key)")
             push!(debug_info, "steps_taken: $(steps_taken)")
+            push!(debug_info, "tile_length: $(game.tile_length)")
             push!(debug_info, "player_position: $(game.player_position)")
+            push!(debug_info, "num_angles: $(game.num_angles)")
+            push!(debug_info, "player_angle: $(game.player_angle)")
             push!(debug_info, "player_direction: $(game.player_direction)")
+            push!(debug_info, "num_rays: $(game.num_rays)")
+            push!(debug_info, "semi_field_of_view_ratio: $(game.semi_field_of_view_ratio)")
             draw_debug_view!(debug_view, debug_info)
 
             copy_image_to_frame_buffer!(frame_buffer, image)
