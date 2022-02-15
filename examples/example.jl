@@ -30,7 +30,7 @@ function Game(;
         tile_length = 256,
         num_angles = 64,
         player_radius = 32,
-        semi_field_of_view_ratio = 2//3,
+        semi_field_of_view_ratio = 1//1,
         num_rays = 512,
         player_position = CartesianIndex((3 * tile_length) ÷ 2, (3 * tile_length) ÷ 2),
         player_angle = 0,
