@@ -14,8 +14,6 @@ mutable struct Game
     semi_field_of_view_ratio::Rational{Int}
     max_steps::Int
     ray_cast_outputs::Vector{Tuple{Int, Int, Int, Int, Int, Int, Int, Int, Int}}
-
-    pu_per_tu::Int
 end
 
 function Game(;
@@ -34,7 +32,6 @@ function Game(;
         player_radius = 32,
         semi_field_of_view_ratio = 2//3,
         num_rays = 512,
-        pu_per_tu = 32,
         player_position = CartesianIndex((3 * tile_length) ÷ 2, (3 * tile_length) ÷ 2),
         player_angle = 0,
         max_steps = 1024,
@@ -64,8 +61,6 @@ function Game(;
                 semi_field_of_view_ratio,
                 max_steps,
                 ray_cast_outputs,
-
-                pu_per_tu,
                )
 
     return game
@@ -150,10 +145,9 @@ function cast_rays!(game::Game)
     return nothing
 end
 
-function draw_top_view!(top_view, game, top_view_colors)
+function draw_top_view!(top_view, game, top_view_colors, pu_per_tu)
     tile_map = game.tile_map
     tile_length = game.tile_length
-    pu_per_tu = game.pu_per_tu
     num_rays = game.num_rays
     ray_cast_outputs = game.ray_cast_outputs
     player_position = game.player_position
@@ -203,7 +197,6 @@ get_normalized_dot_product(x1, y1, x2, y2) = (x1 * x2 + y1 * y2) / (hypot(x1, y1
 function draw_camera_view!(camera_view, game, camera_view_colors, tile_aspect_ratio_camera_view)
     tile_map = game.tile_map
     tile_length = game.tile_length
-    pu_per_tu = game.pu_per_tu
     player_angle = game.player_angle
     player_position = game.player_position
     player_direction = game.player_direction
@@ -291,7 +284,7 @@ function play!(game::Game)
     color_background = 0x00D0D0D0
     tile_map = game.tile_map
     height_tile_map, width_tile_map = size(tile_map)
-    pu_per_tu = game.pu_per_tu
+    pu_per_tu = 32
 
     height_camera_view = 256
     width_camera_view = game.num_rays
@@ -327,7 +320,7 @@ function play!(game::Game)
 
     cast_rays!(game)
     draw_camera_view!(camera_view, game, camera_view_colors, tile_aspect_ratio_camera_view)
-    draw_top_view!(top_view, game, top_view_colors)
+    draw_top_view!(top_view, game, top_view_colors, pu_per_tu)
 
     debug_info = String[]
     push!(debug_info, "steps_taken: $(steps_taken)")
@@ -362,7 +355,7 @@ function play!(game::Game)
 
             cast_rays!(game)
             draw_camera_view!(camera_view, game, camera_view_colors, tile_aspect_ratio_camera_view)
-            draw_top_view!(top_view, game, top_view_colors)
+            draw_top_view!(top_view, game, top_view_colors, pu_per_tu)
             empty!(debug_info)
             push!(debug_info, "key: $(key)")
             push!(debug_info, "steps_taken: $(steps_taken)")
