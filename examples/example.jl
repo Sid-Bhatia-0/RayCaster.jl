@@ -66,12 +66,33 @@ function Game(;
     return game
 end
 
+#####
+##### utils
+#####
+
 function get_player_direction(player_angle, num_angles, player_radius)
     theta = player_angle * 2 * pi / num_angles
     return CartesianIndex(round(Int, player_radius * cos(theta)), round(Int, player_radius * sin(theta)))
 end
 
 is_colliding(tile_map, tile_length, position) = tile_map[RC.get_segment(position[1], tile_length), RC.get_segment(position[2], tile_length)]
+
+get_normalized_dot_product(x1, y1, x2, y2) = (x1 * x2 + y1 * y2) / (hypot(x1, y1) * hypot(x2, y2))
+
+function copy_image_to_frame_buffer!(frame_buffer, image)
+    height_image, width_image = size(image)
+    for j in 1:width_image
+        for i in 1:height_image
+            frame_buffer[j, i] = image[i, j]
+        end
+    end
+
+    return nothing
+end
+
+#####
+##### navigation
+#####
 
 function move_forward!(game)
     tile_map = game.tile_map
@@ -131,56 +152,15 @@ function turn_right!(game)
     return nothing
 end
 
+#####
+##### ray-casting
+#####
+
 cast_rays!(game::Game) = RC.cast_rays!(game.ray_cast_outputs, game.tile_map, game.tile_length, game.player_position[1], game.player_position[2], game.player_direction[1], game.player_direction[2], game.semi_field_of_view_ratio, game.max_steps)
 
-function draw_top_view!(top_view, game, top_view_colors, tile_length_pixels)
-    tile_map = game.tile_map
-    tile_length = game.tile_length
-    num_rays = game.num_rays
-    ray_cast_outputs = game.ray_cast_outputs
-    player_position = game.player_position
-    
-    height_tile_map, width_tile_map = size(tile_map)
-    height_top_view, width_top_view = size(top_view)
-
-    # draw tile map
-    for j in axes(tile_map, 2)
-        for i in axes(tile_map, 1)
-            i_top_left = RC.get_segment_start(i, tile_length_pixels)
-            j_top_left = RC.get_segment_start(j, tile_length_pixels)
-
-            tile_shape = SD.FilledRectangle(SD.Point(i_top_left, j_top_left), tile_length_pixels, tile_length_pixels)
-
-            if tile_map[i, j]
-                color = top_view_colors[:wall]
-            else
-                color = top_view_colors[:empty]
-            end
-
-            SD.draw!(top_view, tile_shape, color)
-
-            tile_border_shape = SD.Rectangle(SD.Point(i_top_left, j_top_left), tile_length_pixels, tile_length_pixels)
-            SD.draw!(top_view, tile_border_shape, top_view_colors[:border])
-        end
-    end
-
-    # draw rays
-    wu_per_pu = tile_length ÷ tile_length_pixels
-    i_player_position_pu = RC.get_segment(player_position[1], wu_per_pu)
-    j_player_position_pu = RC.get_segment(player_position[2], wu_per_pu)
-    player_position_point = SD.Point(i_player_position_pu, j_player_position_pu)
-
-    for i in 1:num_rays
-        x_ray_stop_numerator, x_ray_stop_denominator, y_ray_stop_numerator, y_ray_stop_denominator, _ = ray_cast_outputs[i]
-        i_ray_stop_pu = RC.get_segment(div(x_ray_stop_numerator, x_ray_stop_denominator, RoundNearest), wu_per_pu)
-        j_ray_stop_pu = RC.get_segment(div(y_ray_stop_numerator, y_ray_stop_denominator, RoundNearest), wu_per_pu)
-        SD.draw!(top_view, SD.Line(player_position_point, SD.Point(i_ray_stop_pu, j_ray_stop_pu)), top_view_colors[:ray])
-    end
-
-    return nothing
-end
-
-get_normalized_dot_product(x1, y1, x2, y2) = (x1 * x2 + y1 * y2) / (hypot(x1, y1) * hypot(x2, y2))
+#####
+##### drawing
+#####
 
 function draw_camera_view!(camera_view, game, camera_view_colors, tile_aspect_ratio_camera_view)
     tile_map = game.tile_map
@@ -245,12 +225,48 @@ function draw_camera_view!(camera_view, game, camera_view_colors, tile_aspect_ra
     return nothing
 end
 
-function copy_image_to_frame_buffer!(frame_buffer, image)
-    height_image, width_image = size(image)
-    for j in 1:width_image
-        for i in 1:height_image
-            frame_buffer[j, i] = image[i, j]
+function draw_top_view!(top_view, game, top_view_colors, tile_length_pixels)
+    tile_map = game.tile_map
+    tile_length = game.tile_length
+    num_rays = game.num_rays
+    ray_cast_outputs = game.ray_cast_outputs
+    player_position = game.player_position
+
+    height_tile_map, width_tile_map = size(tile_map)
+    height_top_view, width_top_view = size(top_view)
+
+    # draw tile map
+    for j in axes(tile_map, 2)
+        for i in axes(tile_map, 1)
+            i_top_left = RC.get_segment_start(i, tile_length_pixels)
+            j_top_left = RC.get_segment_start(j, tile_length_pixels)
+
+            tile_shape = SD.FilledRectangle(SD.Point(i_top_left, j_top_left), tile_length_pixels, tile_length_pixels)
+
+            if tile_map[i, j]
+                color = top_view_colors[:wall]
+            else
+                color = top_view_colors[:empty]
+            end
+
+            SD.draw!(top_view, tile_shape, color)
+
+            tile_border_shape = SD.Rectangle(SD.Point(i_top_left, j_top_left), tile_length_pixels, tile_length_pixels)
+            SD.draw!(top_view, tile_border_shape, top_view_colors[:border])
         end
+    end
+
+    # draw rays
+    wu_per_pu = tile_length ÷ tile_length_pixels
+    i_player_position_pu = RC.get_segment(player_position[1], wu_per_pu)
+    j_player_position_pu = RC.get_segment(player_position[2], wu_per_pu)
+    player_position_point = SD.Point(i_player_position_pu, j_player_position_pu)
+
+    for i in 1:num_rays
+        x_ray_stop_numerator, x_ray_stop_denominator, y_ray_stop_numerator, y_ray_stop_denominator, _ = ray_cast_outputs[i]
+        i_ray_stop_pu = RC.get_segment(div(x_ray_stop_numerator, x_ray_stop_denominator, RoundNearest), wu_per_pu)
+        j_ray_stop_pu = RC.get_segment(div(y_ray_stop_numerator, y_ray_stop_denominator, RoundNearest), wu_per_pu)
+        SD.draw!(top_view, SD.Line(player_position_point, SD.Point(i_ray_stop_pu, j_ray_stop_pu)), top_view_colors[:ray])
     end
 
     return nothing
@@ -267,6 +283,10 @@ function draw_debug_view!(debug_view, debug_info)
 
     return nothing
 end
+
+#####
+##### playing
+#####
 
 function play!(game::Game)
     color_background = 0x00D0D0D0
@@ -381,6 +401,9 @@ function play!(game::Game)
     return nothing
 end
 
-game = Game()
+#####
+##### driver code
+#####
 
+game = Game()
 play!(game)
