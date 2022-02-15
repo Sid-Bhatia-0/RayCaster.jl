@@ -15,7 +15,6 @@ mutable struct Game{C}
     max_steps::Int
     ray_cast_outputs::Vector{Tuple{Int, Int, Int, Int, Int, Int, Int, Int, Int}}
 
-    height_camera_view::Int
     camera_view_colors::NamedTuple{(:wall1, :wall2, :wall3, :wall4, :floor, :ceiling), NTuple{6, C}}
     tile_aspect_ratio_camera_view::Rational{Int}
 
@@ -41,7 +40,6 @@ function Game(;
         num_rays = 512,
         pu_per_tu = 32,
         tile_aspect_ratio_camera_view = 1//1,
-        height_camera_view = 256,
         top_view_colors = (wall = 0x00FFFFFF, empty = 0x00000000, ray = 0x00808080, border = 0x00cccccc),
         camera_view_colors = (wall1 = 0x004063D8, wall2 = 0x00389826, wall3 = 0x009558B2, wall4 = 0x00CB3C33, floor = 0x00000000, ceiling = 0x00FFFFFF),
         player_position = CartesianIndex((3 * tile_length) ÷ 2, (3 * tile_length) ÷ 2),
@@ -76,7 +74,6 @@ function Game(;
                 max_steps,
                 ray_cast_outputs,
 
-                height_camera_view,
                 camera_view_colors,
                 tile_aspect_ratio_camera_view,
 
@@ -312,7 +309,7 @@ function play!(game::Game)
     height_tile_map, width_tile_map = size(tile_map)
     pu_per_tu = game.pu_per_tu
 
-    height_camera_view = game.height_camera_view
+    height_camera_view = 256
     width_camera_view = game.num_rays
 
     height_top_view = height_tile_map * pu_per_tu
