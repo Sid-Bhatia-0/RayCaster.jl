@@ -213,12 +213,12 @@ function draw_camera_view!(camera_view, game, camera_view_colors, tile_aspect_ra
         end
 
         if height_line_pu >= height_camera_view - 1
-            camera_view[:, i] .= color
+            SD.draw!(camera_view, SD.VerticalLine(1, height_camera_view, i), color)
         else
             padding_pu = (height_camera_view - height_line_pu) ÷ 2
-            camera_view[1:padding_pu, i] .= camera_view_colors[:ceiling]
-            camera_view[padding_pu + 1 : end - padding_pu, i] .= color
-            camera_view[end - padding_pu + 1 : end, i] .= camera_view_colors[:floor]
+            SD.draw!(camera_view, SD.VerticalLine(1, padding_pu, i) , camera_view_colors[:ceiling])
+            SD.draw!(camera_view, SD.VerticalLine(padding_pu + 1, height_camera_view - padding_pu, i), color)
+            SD.draw!(camera_view, SD.VerticalLine(height_camera_view - padding_pu + 1, height_camera_view, i), camera_view_colors[:floor])
         end
     end
 
