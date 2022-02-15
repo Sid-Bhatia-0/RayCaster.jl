@@ -197,27 +197,27 @@ function draw_camera_view!(camera_view, game, camera_view_colors, tile_aspect_ra
         if tile_map[i_ray_hit_tile, j_ray_hit_tile]
             if hit_dimension == 1
                 if i_ray_hit_tile > i_ray_start_tile
-                    color = camera_view_colors[:wall1]
+                    wall_color = camera_view_colors[:wall1]
                 else
-                    color = camera_view_colors[:wall3]
+                    wall_color = camera_view_colors[:wall3]
                 end
             else
                 if j_ray_hit_tile > j_ray_start_tile
-                    color = camera_view_colors[:wall2]
+                    wall_color = camera_view_colors[:wall2]
                 else
-                    color = camera_view_colors[:wall4]
+                    wall_color = camera_view_colors[:wall4]
                 end
             end
         else
-            color = camera_view_colors[:ceiling]
+            wall_color = camera_view_colors[:ceiling]
         end
 
         if height_line_pu >= height_camera_view - 1
-            SD.draw!(camera_view, SD.VerticalLine(1, height_camera_view, i), color)
+            SD.draw!(camera_view, SD.VerticalLine(1, height_camera_view, i), wall_color)
         else
             padding_pu = (height_camera_view - height_line_pu) ÷ 2
             SD.draw!(camera_view, SD.VerticalLine(1, padding_pu, i) , camera_view_colors[:ceiling])
-            SD.draw!(camera_view, SD.VerticalLine(padding_pu + 1, height_camera_view - padding_pu, i), color)
+            SD.draw!(camera_view, SD.VerticalLine(padding_pu + 1, height_camera_view - padding_pu, i), wall_color)
             SD.draw!(camera_view, SD.VerticalLine(height_camera_view - padding_pu + 1, height_camera_view, i), camera_view_colors[:floor])
         end
     end
