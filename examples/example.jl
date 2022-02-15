@@ -145,7 +145,7 @@ function cast_rays!(game::Game)
     return nothing
 end
 
-function draw_top_view!(top_view, game, top_view_colors, pu_per_tu)
+function draw_top_view!(top_view, game, top_view_colors, tile_length_pixels)
     tile_map = game.tile_map
     tile_length = game.tile_length
     num_rays = game.num_rays
@@ -158,10 +158,10 @@ function draw_top_view!(top_view, game, top_view_colors, pu_per_tu)
     # draw tile map
     for j in axes(tile_map, 2)
         for i in axes(tile_map, 1)
-            i_top_left = RC.get_segment_start(i, pu_per_tu)
-            j_top_left = RC.get_segment_start(j, pu_per_tu)
+            i_top_left = RC.get_segment_start(i, tile_length_pixels)
+            j_top_left = RC.get_segment_start(j, tile_length_pixels)
 
-            tile_shape = SD.FilledRectangle(SD.Point(i_top_left, j_top_left), pu_per_tu, pu_per_tu)
+            tile_shape = SD.FilledRectangle(SD.Point(i_top_left, j_top_left), tile_length_pixels, tile_length_pixels)
 
             if tile_map[i, j]
                 color = top_view_colors[:wall]
@@ -171,13 +171,13 @@ function draw_top_view!(top_view, game, top_view_colors, pu_per_tu)
 
             SD.draw!(top_view, tile_shape, color)
 
-            tile_border_shape = SD.Rectangle(SD.Point(i_top_left, j_top_left), pu_per_tu, pu_per_tu)
+            tile_border_shape = SD.Rectangle(SD.Point(i_top_left, j_top_left), tile_length_pixels, tile_length_pixels)
             SD.draw!(top_view, tile_border_shape, top_view_colors[:border])
         end
     end
 
     # draw rays
-    wu_per_pu = tile_length ÷ pu_per_tu
+    wu_per_pu = tile_length ÷ tile_length_pixels
     i_player_position_pu = RC.get_segment(player_position[1], wu_per_pu)
     j_player_position_pu = RC.get_segment(player_position[2], wu_per_pu)
     player_position_point = SD.Point(i_player_position_pu, j_player_position_pu)
@@ -284,13 +284,13 @@ function play!(game::Game)
     color_background = 0x00D0D0D0
     tile_map = game.tile_map
     height_tile_map, width_tile_map = size(tile_map)
-    pu_per_tu = 32
+    tile_length_pixels = 32
 
     height_camera_view = 256
     width_camera_view = game.num_rays
 
-    height_top_view = height_tile_map * pu_per_tu
-    width_top_view = width_tile_map * pu_per_tu
+    height_top_view = height_tile_map * tile_length_pixels
+    width_top_view = width_tile_map * tile_length_pixels
 
     max_debug_lines = 4
     max_debug_width = 64
@@ -320,7 +320,7 @@ function play!(game::Game)
 
     cast_rays!(game)
     draw_camera_view!(camera_view, game, camera_view_colors, tile_aspect_ratio_camera_view)
-    draw_top_view!(top_view, game, top_view_colors, pu_per_tu)
+    draw_top_view!(top_view, game, top_view_colors, tile_length_pixels)
 
     debug_info = String[]
     push!(debug_info, "steps_taken: $(steps_taken)")
@@ -355,7 +355,7 @@ function play!(game::Game)
 
             cast_rays!(game)
             draw_camera_view!(camera_view, game, camera_view_colors, tile_aspect_ratio_camera_view)
-            draw_top_view!(top_view, game, top_view_colors, pu_per_tu)
+            draw_top_view!(top_view, game, top_view_colors, tile_length_pixels)
             empty!(debug_info)
             push!(debug_info, "key: $(key)")
             push!(debug_info, "steps_taken: $(steps_taken)")
