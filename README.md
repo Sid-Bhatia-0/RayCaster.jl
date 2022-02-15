@@ -5,6 +5,7 @@ This package provides a fast and exact (integer-based) implementation of 2D ray 
 ## Table of contents:
 
 * [Getting Started](#getting-started)
+* [Example](#example)
 * [Notes](#notes)
   - [API](#api)
   - [Integer-based computations](#integer-based-computations)
@@ -141,6 +142,20 @@ y_camera_normal_direction = y_ray_direction
 # here is how we cast multiple rays
 RC.cast_rays!(ray_cast_outputs, obstacle_tile_map, tile_length, x_ray_start, y_ray_start, x_ray_direction, y_ray_direction, semi_field_of_view_ratio, max_steps)
 ```
+
+## Example
+
+A complete ray-casting example is present in the `run_game.jl` script available in the `examples` directory.
+
+Go inside the `examples` directory and run the following command:
+
+```
+ examples $ julia --project=. -e 'import Pkg; Pkg.instantiate(); include("run_game.jl")'
+```
+
+This will open a game window. You can use the arrow keys to navigate around in this game. Here is a screenshot:
+
+<img src="https://user-images.githubusercontent.com/32610387/154131193-879c48c0-1856-4126-96d9-fc00934b7d46.png">
 
 ## Notes
 
