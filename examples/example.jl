@@ -231,6 +231,7 @@ function draw_top_view!(top_view, game, top_view_colors, tile_length_pixels)
     num_rays = game.num_rays
     ray_cast_outputs = game.ray_cast_outputs
     player_position = game.player_position
+    player_radius = game.player_radius
 
     height_tile_map, width_tile_map = size(tile_map)
     height_top_view, width_top_view = size(top_view)
@@ -268,6 +269,8 @@ function draw_top_view!(top_view, game, top_view_colors, tile_length_pixels)
         j_ray_stop_pu = RC.get_segment(div(y_ray_stop_numerator, y_ray_stop_denominator, RoundNearest), wu_per_pu)
         SD.draw!(top_view, SD.Line(player_position_point, SD.Point(i_ray_stop_pu, j_ray_stop_pu)), top_view_colors[:ray])
     end
+
+    SD.draw!(top_view, SD.Circle(SD.Point(RC.get_segment(player_position[1] - player_radius, wu_per_pu), RC.get_segment(player_position[2] - player_radius, wu_per_pu)), RC.get_segment(2 * player_radius, wu_per_pu)), top_view_colors[:player])
 
     return nothing
 end
@@ -318,7 +321,7 @@ function play!(game::Game)
 
     tile_aspect_ratio_camera_view = 1//1
     camera_view_colors = (wall1 = 0x004063D8, wall2 = 0x00389826, wall3 = 0x009558B2, wall4 = 0x00CB3C33, floor = 0x00000000, ceiling = 0x00FFFFFF)
-    top_view_colors = (wall = 0x00FFFFFF, empty = 0x00000000, ray = 0x00808080, border = 0x00cccccc)
+    top_view_colors = (wall = 0x00FFFFFF, empty = 0x00000000, ray = 0x00808080, border = 0x00cccccc, player = 0x00c0c0c0)
 
     frame_buffer = fill(color_background, width_image, height_image)
 
