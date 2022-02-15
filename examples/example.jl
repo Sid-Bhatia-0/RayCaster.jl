@@ -184,9 +184,9 @@ function draw_camera_view!(camera_view, game, camera_view_colors, tile_aspect_ra
         x_ray_stop_numerator, x_ray_stop_denominator, y_ray_stop_numerator, y_ray_stop_denominator, i_ray_hit_tile, j_ray_hit_tile, hit_dimension, x_ray_direction, y_ray_direction = ray_cast_outputs[i]
 
         ray_length = hypot((x_ray_stop_numerator / x_ray_stop_denominator) - player_position[1], (y_ray_stop_numerator / y_ray_stop_denominator) - player_position[2])
-        normalized_projected_distance_wu = ray_length * get_normalized_dot_product(player_direction[1], player_direction[2], x_ray_direction, y_ray_direction)
+        normalized_projected_distance = ray_length * get_normalized_dot_product(player_direction[1], player_direction[2], x_ray_direction, y_ray_direction)
 
-        height_line = tile_aspect_ratio_camera_view * tile_length * num_rays / (2 * semi_field_of_view_ratio * normalized_projected_distance_wu)
+        height_line = tile_aspect_ratio_camera_view * tile_length * num_rays / (2 * semi_field_of_view_ratio * normalized_projected_distance)
 
         if isfinite(height_line)
             height_line_pu = floor(Int, height_line)
