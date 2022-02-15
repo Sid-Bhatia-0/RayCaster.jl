@@ -2,7 +2,7 @@ import MiniFB as MFB
 import RayCaster as RC
 import SimpleDraw as SD
 
-mutable struct Game{C}
+mutable struct Game
     tile_map::BitArray{2}
     tile_length::Int
     player_position::CartesianIndex{2}
@@ -15,10 +15,8 @@ mutable struct Game{C}
     max_steps::Int
     ray_cast_outputs::Vector{Tuple{Int, Int, Int, Int, Int, Int, Int, Int, Int}}
 
-    camera_view_colors::NamedTuple{(:wall1, :wall2, :wall3, :wall4, :floor, :ceiling), NTuple{6, C}}
     tile_aspect_ratio_camera_view::Rational{Int}
 
-    top_view_colors::NamedTuple{(:wall, :empty, :ray, :border), NTuple{4, C}}
     pu_per_tu::Int
 end
 
@@ -40,8 +38,6 @@ function Game(;
         num_rays = 512,
         pu_per_tu = 32,
         tile_aspect_ratio_camera_view = 1//1,
-        top_view_colors = (wall = 0x00FFFFFF, empty = 0x00000000, ray = 0x00808080, border = 0x00cccccc),
-        camera_view_colors = (wall1 = 0x004063D8, wall2 = 0x00389826, wall3 = 0x009558B2, wall4 = 0x00CB3C33, floor = 0x00000000, ceiling = 0x00FFFFFF),
         player_position = CartesianIndex((3 * tile_length) ÷ 2, (3 * tile_length) ÷ 2),
         player_angle = 0,
         max_steps = 1024,
@@ -59,8 +55,6 @@ function Game(;
 
     ray_cast_outputs = Array{Tuple{Int, Int, Int, Int, Int, Int, Int, Int, Int}}(undef, num_rays)
 
-    C = typeof(camera_view_colors[1])
-
     game = Game(
                 tile_map,
                 tile_length,
@@ -74,10 +68,8 @@ function Game(;
                 max_steps,
                 ray_cast_outputs,
 
-                camera_view_colors,
                 tile_aspect_ratio_camera_view,
 
-                top_view_colors,
                 pu_per_tu,
                )
 
@@ -163,14 +155,13 @@ function cast_rays!(game::Game)
     return nothing
 end
 
-function draw_top_view!(top_view, game)
+function draw_top_view!(top_view, game, top_view_colors)
     tile_map = game.tile_map
     tile_length = game.tile_length
     pu_per_tu = game.pu_per_tu
     num_rays = game.num_rays
     ray_cast_outputs = game.ray_cast_outputs
     player_position = game.player_position
-    top_view_colors = game.top_view_colors
     
     height_tile_map, width_tile_map = size(tile_map)
     height_top_view, width_top_view = size(top_view)
@@ -214,7 +205,7 @@ end
 
 get_normalized_dot_product(x1, y1, x2, y2) = (x1 * x2 + y1 * y2) / (hypot(x1, y1) * hypot(x2, y2))
 
-function draw_camera_view!(camera_view, game)
+function draw_camera_view!(camera_view, game, camera_view_colors)
     tile_map = game.tile_map
     tile_length = game.tile_length
     pu_per_tu = game.pu_per_tu
@@ -227,7 +218,6 @@ function draw_camera_view!(camera_view, game)
     player_position = game.player_position
     tile_aspect_ratio_camera_view = game.tile_aspect_ratio_camera_view
     semi_field_of_view_ratio = game.semi_field_of_view_ratio
-    camera_view_colors = game.camera_view_colors
     max_steps = game.max_steps
 
     height_tile_map, width_tile_map = size(tile_map)
@@ -331,8 +321,8 @@ function play!(game::Game)
     top_view = @view image[height_camera_view + 1 : height_camera_view + height_top_view, begin : width_top_view]
     debug_view = @view image[height_camera_view + height_top_view + 1 : height_camera_view + height_top_view + height_debug_view, begin : width_debug_view]
 
-    top_view_colors = game.top_view_colors
-    camera_view_colors = game.camera_view_colors
+    camera_view_colors = (wall1 = 0x004063D8, wall2 = 0x00389826, wall3 = 0x009558B2, wall4 = 0x00CB3C33, floor = 0x00000000, ceiling = 0x00FFFFFF)
+    top_view_colors = (wall = 0x00FFFFFF, empty = 0x00000000, ray = 0x00808080, border = 0x00cccccc)
 
     frame_buffer = fill(color_background, width_image, height_image)
 
@@ -341,8 +331,8 @@ function play!(game::Game)
     steps_taken = 0
 
     cast_rays!(game)
-    draw_camera_view!(camera_view, game)
-    draw_top_view!(top_view, game)
+    draw_camera_view!(camera_view, game, camera_view_colors)
+    draw_top_view!(top_view, game, top_view_colors)
 
     debug_info = String[]
     push!(debug_info, "steps_taken: $(steps_taken)")
@@ -376,8 +366,8 @@ function play!(game::Game)
             fill!(image, color_background)
 
             cast_rays!(game)
-            draw_camera_view!(camera_view, game)
-            draw_top_view!(top_view, game)
+            draw_camera_view!(camera_view, game, camera_view_colors)
+            draw_top_view!(top_view, game, top_view_colors)
             empty!(debug_info)
             push!(debug_info, "key: $(key)")
             push!(debug_info, "steps_taken: $(steps_taken)")
