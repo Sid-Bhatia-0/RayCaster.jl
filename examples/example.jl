@@ -131,19 +131,7 @@ function turn_right!(game)
     return nothing
 end
 
-function cast_rays!(game::Game)
-    tile_map = game.tile_map
-    tile_length = game.tile_length
-    player_position = game.player_position
-    player_direction = game.player_direction
-    ray_cast_outputs = game.ray_cast_outputs
-    semi_field_of_view_ratio = game.semi_field_of_view_ratio
-    max_steps = game.max_steps
-
-    RC.cast_rays!(ray_cast_outputs, tile_map, tile_length, player_position[1], player_position[2], player_direction[1], player_direction[2], semi_field_of_view_ratio, max_steps)
-
-    return nothing
-end
+cast_rays!(game::Game) = RC.cast_rays!(game.ray_cast_outputs, game.tile_map, game.tile_length, game.player_position[1], game.player_position[2], game.player_direction[1], game.player_direction[2], game.semi_field_of_view_ratio, game.max_steps)
 
 function draw_top_view!(top_view, game, top_view_colors, tile_length_pixels)
     tile_map = game.tile_map
