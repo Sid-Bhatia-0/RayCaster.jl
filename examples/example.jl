@@ -16,11 +16,9 @@ mutable struct Game{C}
     ray_cast_outputs::Vector{Tuple{Int, Int, Int, Int, Int, Int, Int, Int, Int}}
 
     height_camera_view::Int
-    camera_view::Array{C, 2}
     camera_view_colors::NamedTuple{(:wall1, :wall2, :wall3, :wall4, :floor, :ceiling), NTuple{6, C}}
     tile_aspect_ratio_camera_view::Rational{Int}
 
-    top_view::Array{C, 2}
     top_view_colors::NamedTuple{(:wall, :empty, :ray, :border), NTuple{4, C}}
     pu_per_tu::Int
 end
@@ -65,10 +63,6 @@ function Game(;
 
     C = typeof(camera_view_colors[1])
 
-    camera_view = Array{C}(undef, height_camera_view, num_rays)
-
-    top_view = Array{C}(undef, height_tile_map * pu_per_tu, width_tile_map * pu_per_tu)
-
     game = Game(
                 tile_map,
                 tile_length,
@@ -83,18 +77,12 @@ function Game(;
                 ray_cast_outputs,
 
                 height_camera_view,
-                camera_view,
                 camera_view_colors,
                 tile_aspect_ratio_camera_view,
 
-                top_view,
                 top_view_colors,
                 pu_per_tu,
                )
-
-    cast_rays!(game)
-    draw_camera_view!(game)
-    draw_top_view!(game)
 
     return game
 end
@@ -178,10 +166,9 @@ function cast_rays!(game::Game)
     return nothing
 end
 
-function draw_top_view!(game)
+function draw_top_view!(top_view, game)
     tile_map = game.tile_map
     tile_length = game.tile_length
-    top_view = game.top_view
     pu_per_tu = game.pu_per_tu
     num_rays = game.num_rays
     ray_cast_outputs = game.ray_cast_outputs
@@ -230,10 +217,9 @@ end
 
 get_normalized_dot_product(x1, y1, x2, y2) = (x1 * x2 + y1 * y2) / (hypot(x1, y1) * hypot(x2, y2))
 
-function draw_camera_view!(game)
+function draw_camera_view!(camera_view, game)
     tile_map = game.tile_map
     tile_length = game.tile_length
-    top_view = game.top_view
     pu_per_tu = game.pu_per_tu
     player_angle = game.player_angle
     player_position = game.player_position
@@ -244,7 +230,6 @@ function draw_camera_view!(game)
     player_position = game.player_position
     tile_aspect_ratio_camera_view = game.tile_aspect_ratio_camera_view
     semi_field_of_view_ratio = game.semi_field_of_view_ratio
-    camera_view = game.camera_view
     camera_view_colors = game.camera_view_colors
     max_steps = game.max_steps
 
@@ -309,69 +294,101 @@ function copy_image_to_frame_buffer!(frame_buffer, image)
     return nothing
 end
 
+function draw_debug_view!(debug_view, debug_info)
+    font = SD.TERMINUS_32_16
+    height_font = 32
+    color = 0x00000000
+
+    for (i, line) in enumerate(debug_info)
+        SD.draw!(debug_view, SD.TextLine(SD.Point(1 + (i - 1) * height_font, 1), line, font), color)
+    end
+
+    return nothing
+end
+
 function play!(game::Game)
-    top_view = game.top_view
-    camera_view = game.camera_view
+    color_background = 0x00D0D0D0
+    tile_map = game.tile_map
+    height_tile_map, width_tile_map = size(tile_map)
+    pu_per_tu = game.pu_per_tu
+
+    height_camera_view = game.height_camera_view
+    width_camera_view = game.num_rays
+
+    height_top_view = height_tile_map * pu_per_tu
+    width_top_view = width_tile_map * pu_per_tu
+
+    max_debug_lines = 4
+    max_debug_width = 64
+    height_font = 32
+    width_font = 16
+    height_debug_view = max_debug_lines * height_font
+    width_debug_view = max_debug_width * width_font
+
+    height_image = height_top_view + height_camera_view + height_debug_view
+    width_image = max(width_top_view, width_camera_view, width_debug_view)
+
+    image = fill(color_background, height_image, width_image)
+
+    camera_view = @view image[begin : height_camera_view, begin : width_camera_view]
+    top_view = @view image[height_camera_view + 1 : height_camera_view + height_top_view, begin : width_top_view]
+    debug_view = @view image[height_camera_view + height_top_view + 1 : height_camera_view + height_top_view + height_debug_view, begin : width_debug_view]
 
     top_view_colors = game.top_view_colors
     camera_view_colors = game.camera_view_colors
 
-    height_top_view, width_top_view = size(top_view)
-    height_camera_view, width_camera_view = size(camera_view)
-
-    height_image = height_top_view + height_camera_view
-    width_image = max(width_top_view, width_camera_view)
-
-    frame_buffer = zeros(UInt32, width_image, height_image)
+    frame_buffer = fill(color_background, width_image, height_image)
 
     window = MFB.mfb_open(String(nameof(typeof(game))), width_image, height_image)
 
-    copy_image_to_frame_buffer!(@view(frame_buffer[begin:width_camera_view, begin:height_camera_view]), camera_view)
-    copy_image_to_frame_buffer!(@view(frame_buffer[begin:width_top_view, height_camera_view + 1 : height_camera_view + height_top_view]), top_view)
-
     steps_taken = 0
+
+    cast_rays!(game)
+    draw_camera_view!(camera_view, game)
+    draw_top_view!(top_view, game)
+
+    debug_info = String[]
+    push!(debug_info, "steps_taken: $(steps_taken)")
+    push!(debug_info, "player_position: $(game.player_position)")
+    push!(debug_info, "player_direction: $(game.player_direction)")
+    draw_debug_view!(debug_view, debug_info)
+
+    copy_image_to_frame_buffer!(frame_buffer, image)
 
     function keyboard_callback(window, key, mod, is_pressed)::Cvoid
         if is_pressed
-            println("*******************************")
-            @show key
-
             if key == MFB.KB_KEY_Q
                 MFB.mfb_close(window)
                 return nothing
             elseif key == MFB.KB_KEY_UP
                 move_forward!(game)
-                cast_rays!(game)
-                draw_camera_view!(game)
-                draw_top_view!(game)
                 steps_taken += 1
             elseif key == MFB.KB_KEY_DOWN
                 move_backward!(game)
-                cast_rays!(game)
-                draw_camera_view!(game)
-                draw_top_view!(game)
                 steps_taken += 1
             elseif key == MFB.KB_KEY_LEFT
                 turn_left!(game)
-                cast_rays!(game)
-                draw_camera_view!(game)
-                draw_top_view!(game)
                 steps_taken += 1
             elseif key == MFB.KB_KEY_RIGHT
                 turn_right!(game)
-                cast_rays!(game)
-                draw_camera_view!(game)
-                draw_top_view!(game)
                 steps_taken += 1
             else
                 @warn "No keybinding exists for $(key)"
             end
 
-            fill!(frame_buffer, 0x00000000)
-            copy_image_to_frame_buffer!(@view(frame_buffer[begin:width_camera_view, begin:height_camera_view]), camera_view)
-            copy_image_to_frame_buffer!(@view(frame_buffer[begin:width_top_view, height_camera_view + 1 : height_camera_view + height_top_view]), top_view)
+            fill!(image, color_background)
 
-            @show steps_taken
+            cast_rays!(game)
+            draw_camera_view!(camera_view, game)
+            draw_top_view!(top_view, game)
+            empty!(debug_info)
+            push!(debug_info, "key: $(key)")
+            push!(debug_info, "steps_taken: $(steps_taken)")
+            push!(debug_info, "player_position: $(game.player_position)")
+            push!(debug_info, "player_direction: $(game.player_direction)")
+            draw_debug_view!(debug_view, debug_info)
+
+            copy_image_to_frame_buffer!(frame_buffer, image)
         end
 
         return nothing
