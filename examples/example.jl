@@ -13,7 +13,7 @@ mutable struct Game
     num_rays::Int
     semi_field_of_view_ratio::Rational{Int}
     max_steps::Int
-    ray_cast_outputs::Vector{Tuple{Int, Int, Int, Int, Int, Int, Int, Int, Int}}
+    ray_cast_outputs::Vector{NTuple{9, Int}}
 end
 
 function Game(;
@@ -47,7 +47,7 @@ function Game(;
 
     player_direction = get_player_direction(player_angle, num_angles, player_radius)
 
-    ray_cast_outputs = Array{Tuple{Int, Int, Int, Int, Int, Int, Int, Int, Int}}(undef, num_rays)
+    ray_cast_outputs = Array{NTuple{9, Int}}(undef, num_rays)
 
     game = Game(
                 tile_map,
