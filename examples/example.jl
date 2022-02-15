@@ -275,10 +275,9 @@ function draw_top_view!(top_view, game, top_view_colors, tile_length_pixels)
     return nothing
 end
 
-function draw_debug_view!(debug_view, debug_info)
+function draw_debug_view!(debug_view, debug_info, color)
     font = SD.TERMINUS_32_16
     height_font = 32
-    color = 0x00000000
 
     for (i, line) in enumerate(debug_info)
         SD.draw!(debug_view, SD.TextLine(SD.Point(1 + (i - 1) * height_font, 1), line, font), color)
@@ -291,20 +290,27 @@ end
 ##### playing
 #####
 
-function play!(game::Game)
-    color_background = 0x00D0D0D0
+function play!(
+        game::Game;
+        tile_length_pixels = 32,
+        height_camera_view = 256,
+        max_debug_lines = 9,
+        max_debug_width = 64,
+        tile_aspect_ratio_camera_view = 1//1,
+        background_color = 0x00D0D0D0,
+        camera_view_colors = (wall1 = 0x004063D8, wall2 = 0x00389826, wall3 = 0x009558B2, wall4 = 0x00CB3C33, floor = 0x00000000, ceiling = 0x00FFFFFF),
+        top_view_colors = (wall = 0x00FFFFFF, empty = 0x00000000, ray = 0x00808080, border = 0x00cccccc, player = 0x00c0c0c0),
+        debug_view_text_color = 0x00000000,
+    )
+
     tile_map = game.tile_map
     height_tile_map, width_tile_map = size(tile_map)
-    tile_length_pixels = 32
 
-    height_camera_view = 256
     width_camera_view = game.num_rays
 
     height_top_view = height_tile_map * tile_length_pixels
     width_top_view = width_tile_map * tile_length_pixels
 
-    max_debug_lines = 12
-    max_debug_width = 64
     height_font = 32
     width_font = 16
     height_debug_view = max_debug_lines * height_font
@@ -313,17 +319,13 @@ function play!(game::Game)
     height_image = height_top_view + height_camera_view + height_debug_view
     width_image = max(width_top_view, width_camera_view, width_debug_view)
 
-    image = fill(color_background, height_image, width_image)
+    image = fill(background_color, height_image, width_image)
 
     camera_view = @view image[begin : height_camera_view, begin : width_camera_view]
     top_view = @view image[height_camera_view + 1 : height_camera_view + height_top_view, begin : width_top_view]
     debug_view = @view image[height_camera_view + height_top_view + 1 : height_camera_view + height_top_view + height_debug_view, begin : width_debug_view]
 
-    tile_aspect_ratio_camera_view = 1//1
-    camera_view_colors = (wall1 = 0x004063D8, wall2 = 0x00389826, wall3 = 0x009558B2, wall4 = 0x00CB3C33, floor = 0x00000000, ceiling = 0x00FFFFFF)
-    top_view_colors = (wall = 0x00FFFFFF, empty = 0x00000000, ray = 0x00808080, border = 0x00cccccc, player = 0x00c0c0c0)
-
-    frame_buffer = fill(color_background, width_image, height_image)
+    frame_buffer = fill(background_color, width_image, height_image)
 
     window = MFB.mfb_open(String(nameof(typeof(game))), width_image, height_image)
 
@@ -343,7 +345,7 @@ function play!(game::Game)
     push!(debug_info, "player_direction: $(game.player_direction)")
     push!(debug_info, "num_rays: $(game.num_rays)")
     push!(debug_info, "semi_field_of_view_ratio: $(game.semi_field_of_view_ratio)")
-    draw_debug_view!(debug_view, debug_info)
+    draw_debug_view!(debug_view, debug_info, debug_view_text_color)
 
     copy_image_to_frame_buffer!(frame_buffer, image)
 
@@ -368,7 +370,7 @@ function play!(game::Game)
                 @warn "No keybinding exists for $(key)"
             end
 
-            fill!(image, color_background)
+            fill!(image, background_color)
 
             cast_rays!(game)
             draw_camera_view!(camera_view, game, camera_view_colors, tile_aspect_ratio_camera_view)
@@ -383,7 +385,7 @@ function play!(game::Game)
             push!(debug_info, "player_direction: $(game.player_direction)")
             push!(debug_info, "num_rays: $(game.num_rays)")
             push!(debug_info, "semi_field_of_view_ratio: $(game.semi_field_of_view_ratio)")
-            draw_debug_view!(debug_view, debug_info)
+            draw_debug_view!(debug_view, debug_info, debug_view_text_color)
 
             copy_image_to_frame_buffer!(frame_buffer, image)
         end
