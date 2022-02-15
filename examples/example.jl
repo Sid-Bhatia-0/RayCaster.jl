@@ -258,19 +258,19 @@ function draw_top_view!(top_view, game, top_view_colors, tile_length_pixels)
     end
 
     # draw rays
-    wu_per_pu = tile_length ÷ tile_length_pixels
-    i_player_position_pu = RC.get_segment(player_position[1], wu_per_pu)
-    j_player_position_pu = RC.get_segment(player_position[2], wu_per_pu)
+    pixel_length = tile_length ÷ tile_length_pixels
+    i_player_position_pu = RC.get_segment(player_position[1], pixel_length)
+    j_player_position_pu = RC.get_segment(player_position[2], pixel_length)
     player_position_point = SD.Point(i_player_position_pu, j_player_position_pu)
 
     for i in 1:num_rays
         x_ray_stop_numerator, x_ray_stop_denominator, y_ray_stop_numerator, y_ray_stop_denominator, _ = ray_cast_outputs[i]
-        i_ray_stop_pu = RC.get_segment(div(x_ray_stop_numerator, x_ray_stop_denominator, RoundNearest), wu_per_pu)
-        j_ray_stop_pu = RC.get_segment(div(y_ray_stop_numerator, y_ray_stop_denominator, RoundNearest), wu_per_pu)
+        i_ray_stop_pu = RC.get_segment(div(x_ray_stop_numerator, x_ray_stop_denominator, RoundNearest), pixel_length)
+        j_ray_stop_pu = RC.get_segment(div(y_ray_stop_numerator, y_ray_stop_denominator, RoundNearest), pixel_length)
         SD.draw!(top_view, SD.Line(player_position_point, SD.Point(i_ray_stop_pu, j_ray_stop_pu)), top_view_colors[:ray])
     end
 
-    SD.draw!(top_view, SD.Circle(SD.Point(RC.get_segment(player_position[1] - player_radius, wu_per_pu), RC.get_segment(player_position[2] - player_radius, wu_per_pu)), RC.get_segment(2 * player_radius, wu_per_pu)), top_view_colors[:player])
+    SD.draw!(top_view, SD.Circle(SD.Point(RC.get_segment(player_position[1] - player_radius, pixel_length), RC.get_segment(player_position[2] - player_radius, pixel_length)), RC.get_segment(2 * player_radius, pixel_length)), top_view_colors[:player])
 
     return nothing
 end
